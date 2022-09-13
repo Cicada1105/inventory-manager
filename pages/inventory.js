@@ -46,14 +46,7 @@ export async function getServerSideProps(context) {
     client = await mongoClient.connect();
 
     let db = client.db(process.env.MONGODB_DB);
-    // let stock = await db.collection("stock").aggregate([{
-    //   $lookup: {
-    //     from: "locations",
-    //     localField: "location_id",
-    //     foreignField: "_id",
-    //     as: "location"
-    //   }
-    // }]).find({}).toArray();
+
     let stock = await db.collection("stock").aggregate([{
       $lookup: {
         from:"locations",
@@ -62,19 +55,10 @@ export async function getServerSideProps(context) {
         as:"location"
       }
     }]).toArray();
-    // Stock contains location id to reference the locations collection
-    // Search locations collection for location id and add location attribute to stock
-    // stock.forEach(item => {
-    //   let foundLocation = locations.find(location => location._id === new ObjectId(item.location_id));
 
-    //   item["location"] = foundLocation["name"];
-    // });
-    //console.log("Logging stock");
-    //console.log(stock.toArray());
     return {
       props: {
         items: JSON.stringify(stock)
-        //items: JSON.stringify([{name:"Item 1",brand:"Brand A",quantity:29,location:"Location 2",description:"asd;lfkjs"},{}])
       }
     }
   } catch(e) {
