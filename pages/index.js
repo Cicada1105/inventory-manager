@@ -1,6 +1,3 @@
-import { useEffect } from 'react'
-import Head from 'next/head'
-import Image from 'next/image'
 import mongoClient from '../utils/mongodb.js'
 
 export default function Home({ types }) {
@@ -33,15 +30,11 @@ export async function getServerSideProps(context) {
     client = await mongoClient.connect();
 
     let db = client.db(process.env.MONGODB_DB);
-    //let collection = await db.collection("access_types");
-    //console.log(collection);
     let types = await db.collection("access_types").find({}).toArray();
-    console.log(types);
 
     return {
       props: {
         types: JSON.stringify(types)
-        //types: JSON.stringify([{name:"Basic User", restriction:1},{name:"Admin", restriction: 2},{name:"Super User", restriction:3}])
       }
     }
   } catch(e) {
