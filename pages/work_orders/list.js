@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheck, faX } from '@fortawesome/free-solid-svg-icons'
+
 export default function WorkOrders({ orders }) {
   const [workOrders,setWorkOrders] = useState(JSON.parse(orders));
   const [completedOrders,setCompletedOrders] = useState(workOrders.filter(order => order.is_fulfilled === true));
@@ -35,7 +38,9 @@ export default function WorkOrders({ orders }) {
                 <td>{order.priority}</td>
                 <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
                 <td>{order.reason}</td>
-                <td>✅</td>
+                <td>
+                  <FontAwesomeIcon icon={faCheck} />
+                </td>
               </tr>
             );
           })
@@ -68,7 +73,9 @@ export default function WorkOrders({ orders }) {
                 <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
                 <td>{(new Date(order.date_fulfilled)).toLocaleDateString()}</td>
                 <td>{order.reason}</td>
-                <td>X</td>
+                <td>
+                  <FontAwesomeIcon icon={faX} />
+                </td>
               </tr>
             );
           })

@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons'
+
 export default function Users({ users }) {
 
   return (
@@ -15,6 +18,7 @@ export default function Users({ users }) {
             <th>Username</th>
             <th>Access Type/Role</th>
             <th>Date Registered</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -27,6 +31,10 @@ export default function Users({ users }) {
                 <td>{user.username}</td>
                 <td>{user.access_type[0]["name"]}</td>
                 <td>{(new Date(user.date_registered)).toLocaleDateString()}</td>
+                <td>
+                  <FontAwesomeIcon icon={faPenToSquare} />
+                  <FontAwesomeIcon icon={faX} />
+                </td>
               </tr>
             );
           })
