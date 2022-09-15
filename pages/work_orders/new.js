@@ -5,7 +5,7 @@ export default function NewUser() {
 
   return (
     <>
-      <h1 className="text-center mt-3 text-3xl font-bold underline">New User</h1>
+      <h1 className="text-center mt-3 text-3xl font-bold underline">New Work Order</h1>
     </>
   )
 }
