@@ -34,9 +34,8 @@ export async function getServerSideProps(context) {
       client = await mongoClient.connect();
 
       let db = client.db(process.env.MONGODB_DB);
-      console.log(params["name"]);
-      console.log(params["description"]);
-      let locations = await db.collection("locations").insertOne({
+      
+      await db.collection("locations").insertOne({
         name: params["name"],
         description: params["description"]
       });

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import mongoClient from '../utils/mongodb.js'
+import mongoClient from '../../utils/mongodb.js'
 
 export default function Inventory({ items }) {
 
@@ -8,7 +8,7 @@ export default function Inventory({ items }) {
       <h1 className="text-center mt-3 text-3xl font-bold underline">
         Inventory
       </h1>
-      <Link href="/new-work-order">New Work Order</Link>
+      <Link href="/inventory/new">New Stock</Link>
       <table style={{color:"white"}}>
         <thead>
           <tr>

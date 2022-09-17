@@ -3,7 +3,7 @@
 	as reference
 */
 
-import { MongoClient, ServerApiVersion } from 'mongodb'
+import { MongoClient, ServerApiVersion, ObjectId  } from 'mongodb'
 
 // Check if the mongodb uri exists in the local env
 if (!process.env.MONGODB_URI) {
@@ -15,4 +15,5 @@ const options = { useNewUrlParser: true, useUnifiedTopology: true, serverApi: Se
 
 let client = new MongoClient(mongoURI, options);
 
+export { ObjectId }
 export default client;
