@@ -112,7 +112,6 @@ export async function getServerSideProps(context) {
         }
       }
     ]).toArray();
-    console.log(workOrders);
     return {
       props: {
         orders: JSON.stringify(workOrders)
