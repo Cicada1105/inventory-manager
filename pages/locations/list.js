@@ -1,16 +1,18 @@
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import mongoClient from '../../utils/mongodb.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 
 export default function Users({ locations }) {
+  const routes = useRouter();
 
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Locations</h1>
       <Link href="/locations/new">New Location</Link>
-      <table style={{color:"white"}}>
+      <table className="m-auto mt-8 text-center" style={{color:"white"}}>
         <thead>
           <tr>
             <th>Name</th>
@@ -26,7 +28,7 @@ export default function Users({ locations }) {
                 <td>{location.name}</td>
                 <td>{location.description}</td>
                 <td>
-                  <FontAwesomeIcon icon={faPenToSquare} />
+                  <FontAwesomeIcon onClick={() => routes.push(`/locations/update?id=${location._id}`)} icon={faPenToSquare} />
                 </td>
               </tr>
             );
