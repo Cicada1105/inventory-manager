@@ -6,7 +6,7 @@ export default function ConfirmationPopup({workOrder: { id, user, item, num_item
 				<h2 className="mb-10">Are you sure you want to delete {user}'s request for {num_items} {item}{(num_items > 1) && "s"} </h2>
 				<div className="flex justify-around gap-10">
 					<button className="py-1 px-2 border-2 border-white bg-black hover:bg-white hover:text-black" onClick={onCancel}>Cancel</button>
-					<form method="POST" action="/api/work_orders/delete" className="py-2 px-3 border-2 border-white bg-black hover:bg-white hover:text-black">
+					<form method="POST" action="/api/legacy_work_orders/delete" className="py-2 px-3 border-2 border-white bg-black hover:bg-white hover:text-black">
 						<input type="hidden" name="id" value={ id } />
 						<input type="submit" value="Delete" />
 					</form>

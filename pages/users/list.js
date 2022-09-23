@@ -1,11 +1,24 @@
+import { useState } from 'react'
 import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons'
 
-export default function Users({ users }) {
+import ConfirmationPopup from './ConfirmationPopup.js'
 
+export default function Users({ users }) {
+  const [displayModal, setDisplayModal] = useState(false);
+  const [removedUser,setRemovedUser] = useState(null);
+
+  function handleDisplayModal(id, user_name) {
+    setDisplayModal(true);
+    setRemovedUser({ id, user_name });
+  }
+  function handleRemoveDisplayModal() {
+    setDisplayModal(false);
+    setRemovedUser(null);
+  }
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Users</h1>
@@ -33,7 +46,7 @@ export default function Users({ users }) {
                 <td>{(new Date(user.date_registered)).toLocaleDateString()}</td>
                 <td>
                   <FontAwesomeIcon icon={faPenToSquare} />
-                  <FontAwesomeIcon icon={faX} />
+                  <FontAwesomeIcon icon={faX} onClick={() => handleDisplayModal(user["_id"],user["first_name"].concat(" ",user["last_name"]))} />
                 </td>
               </tr>
             );
@@ -41,6 +54,7 @@ export default function Users({ users }) {
         }
         </tbody>
       </table>
+      {displayModal && <ConfirmationPopup user={removedUser} onCancel={handleRemoveDisplayModal} />}
     </>
   )
 }
