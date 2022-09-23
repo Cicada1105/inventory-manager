@@ -5,25 +5,36 @@ import mongoClient from '../../utils/mongodb.js'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faX } from '@fortawesome/free-solid-svg-icons'
 
-import ConfirmationPopup from './ConfirmationPopup.js'
+import CompleteConfirmation from './CompleteConfirmation.js'
+import DeleteConfirmation from './DeleteConfirmation.js'
 
 export default function WorkOrders({ orders }) {
   const workOrders = JSON.parse(orders);
   // Filter out the completed and incomplete work orders of current employees
   const [completedOrders,setCompletedOrders] = useState(workOrders.filter(order => order.is_fulfilled === true));
   const [incompleteOrders,setIncompleteOrders] = useState(workOrders.filter(order => order.is_fulfilled === false));
-  const [displayModal, setDisplayModal] = useState(false);
-  const [removedWorkOrder,setRemovedWorkOrder] = useState(null);
+  const [displayCompleteModal, setDisplayCompleteModal] = useState(false);
+  const [displayDeleteModal, setDisplayDeleteModal] = useState(false);
+  const [workOrder,setWorkOrder] = useState(null);
 
-  function handleDisplayModal(id, user, item, num_items) {
-    // Update current display of modal
-    setDisplayModal(true);
+  function handleDisplayCompleteModal(id, user, item, num_items) {
+    setDisplayCompleteModal(true);
     // Update current work order to be removed
-    setRemovedWorkOrder({ id, user, item, num_items });
+    setWorkOrder({ id, user, item, num_items });
   }
-  function handleRemoveDisplayModal() {
-    setDisplayModal(false);
-    setRemovedWorkOrder(null);
+  function handleRemoveCompleteModal() {
+    setDisplayCompleteModal(false);
+    setWorkOrder(null);
+  }
+  function handleDisplayDeleteModal(id, user, item, num_items) {
+    // Update current display of modal
+    setDisplayDeleteModal(true);
+    // Update current work order to be removed
+    setWorkOrder({ id, user, item, num_items });
+  }
+  function handleRemoveDeleteModal() {
+    setDisplayDeleteModal(false);
+    setWorkOrder(null);
   }
 
   return (
@@ -55,7 +66,9 @@ export default function WorkOrders({ orders }) {
                 <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
                 <td>{order.reason}</td>
                 <td>
-                  <FontAwesomeIcon icon={faCheck} />
+                  <span onClick={() => handleDisplayCompleteModal(order["_id"], order["user"][0]["first_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
+                    <FontAwesomeIcon className="hover:cursor-pointer" icon={faCheck} />
+                  </span>
                 </td>
               </tr>
             );
@@ -90,7 +103,7 @@ export default function WorkOrders({ orders }) {
                 <td>{(new Date(order.date_fulfilled)).toLocaleDateString()}</td>
                 <td>{order.reason}</td>
                 <td>
-                  <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
+                  <span onClick={() => handleDisplayDeleteModal(order["_id"], order["user"][0]["first_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
                     <FontAwesomeIcon icon={faX} className="hover:cursor-pointer" />
                   </span>
                 </td>
@@ -100,7 +113,8 @@ export default function WorkOrders({ orders }) {
         }
         </tbody>
       </table>
-      {displayModal && <ConfirmationPopup workOrder={removedWorkOrder} onCancel={handleRemoveDisplayModal} />}
+      {displayCompleteModal && <CompleteConfirmation workOrder={workOrder} onCancel={handleRemoveCompleteModal} />}
+      {displayDeleteModal && <DeleteConfirmation workOrder={workOrder} onCancel={handleRemoveDeleteModal} />}
     </>
   )
 }
