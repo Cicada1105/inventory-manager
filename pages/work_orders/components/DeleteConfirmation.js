@@ -5,7 +5,7 @@ export default function DeleteConfirmation({workOrder: { id, user, item, num_ite
 		<ConfirmationPopup 
 			title={`Are you sure you want to delete ${user}'s request for ${num_items} ${item}${(num_items > 1) && "s"}`} 
 			onCancel={onCancel}
-			submitPath="/api/work_orders/delete"
+			submit={{ path: "/api/work_orders/delete", btnText: "Delete" }}
 			workOrderId={id}
 		/>
 	);
