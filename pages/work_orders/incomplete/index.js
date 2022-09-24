@@ -18,6 +18,9 @@ export default function IncompleteWorkOrders({ orders }) {
     setDisplayModal(false);
     setWorkOrder(null);
   }
+  function handleCompleteOrder(id) {
+
+  }
 
   return (
     <>
@@ -56,7 +59,7 @@ export default function IncompleteWorkOrders({ orders }) {
         }
         </tbody>
       </table>
-      {displayModal && <CompleteConfirmation workOrder={workOrder} onCancel={handleRemoveModal} />}
+      {displayModal && <CompleteConfirmation workOrder={workOrder} controls={{ onCancel: handleRemoveModal , onSubmit: () => handleCompleteOrder(workOrder["id"]) }} />}
     </>
   )
 }

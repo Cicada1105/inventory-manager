@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useRouter } from 'next/router'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
@@ -8,6 +9,9 @@ import DeleteConfirmation from '../components/DeleteConfirmation.js'
 export default function CompletedWorkOrders({ orders }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [workOrder,setWorkOrder] = useState(null);
+  const [responseMsg, setResponseMsg] = useState(null);
+
+  const routes = useRouter();
 
   function handleDisplayModal(id, user, item, num_items) {
     // Update current display of modal
@@ -20,10 +24,51 @@ export default function CompletedWorkOrders({ orders }) {
     setWorkOrder(null);
   }
 
+  function handleDeleteOrder(id) {
+    fetch("/api/work_orders/delete", {
+      method: 'POST',
+      mode: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    }).then(resp => {
+      resp.json().then(data => {
+        if (resp.status === 200)
+          setResponseMsg({ 
+            msg: data["message"],
+            isSuccess: true
+          });
+        else
+          setResponseMsg({
+            msg: data["message"],
+            isSuccess: false
+          })
+      });
+    }).catch(err => {
+      console.log("error");
+    }).finally(() => {
+      // Response is done, remoe modal
+      handleRemoveModal();
+      // After some time, reset response message and refresh page
+      setTimeout(() => {
+        routes.push("/work_orders/list");
+        setResponseMsg(null);
+      }, 2500);
+    })
+  }
+
   return (
     <>
       <table className="m-auto mt-8 text-center" style={{color:"white"}}>
-        <caption>Completed Orders</caption>
+        <caption>
+          Completed Orders
+          {
+            responseMsg && (
+              <><br /><span className={ responseMsg["isSuccess"] ? "text-green-400" : "text-red-400" }>{ responseMsg["msg"] }</span></>
+            )
+          }
+        </caption>
         <thead>
           <tr>
             <th>Work Order Owner</th>
@@ -59,7 +104,7 @@ export default function CompletedWorkOrders({ orders }) {
         }
         </tbody>
       </table>
-      {displayModal && <DeleteConfirmation workOrder={workOrder} onCancel={handleRemoveModal} />}
+      {displayModal && <DeleteConfirmation workOrder={workOrder} controls={{ onCancel: handleRemoveModal, onSubmit: () => handleDeleteOrder(workOrder["id"]) }} />}
     </>
   )
 }
