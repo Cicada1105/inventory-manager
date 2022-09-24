@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useRouter } from 'next/router'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
@@ -8,6 +9,9 @@ import CompleteConfirmation from '../components/CompleteConfirmation.js'
 export default function IncompleteWorkOrders({ orders }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [workOrder,setWorkOrder] = useState(null);
+  const [responseMsg, setResponseMsg] = useState(null);
+
+  const routes = useRouter();
 
   function handleDisplayModal(id, user, item, num_items) {
     setDisplayModal(true);
@@ -19,13 +23,50 @@ export default function IncompleteWorkOrders({ orders }) {
     setWorkOrder(null);
   }
   function handleCompleteOrder(id) {
-
+    fetch("/api/work_orders/complete", {
+      method: 'POST',
+      mode: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    }).then(resp => {
+      resp.json().then(data => {
+        if (resp.status === 200)
+          setResponseMsg({ 
+            msg: data["message"],
+            isSuccess: true
+          });
+        else if (resp.status === 409) // 409 -> Conflict in the current state of the data -> insufficient inventory items to complete order
+          setResponseMsg({
+            msg: data["message"],
+            isSuccess: false
+          })
+      });
+    }).catch(err => {
+      console.log("error");
+    }).finally(() => {
+      // Response is done, remoe modal
+      handleRemoveModal();
+      // After some time, reset response message and refresh page
+      setTimeout(() => {
+        routes.push("/work_orders/list");
+        setResponseMsg(null);
+      }, 2500);
+    })
   }
 
   return (
     <>
       <table className="m-auto mt-8 text-center" style={{color:"white"}}>
-        <caption>Incomplete Work Orders</caption>
+        <caption>
+          Incomplete Orders
+          {
+            responseMsg && (
+              <><br /><span className={ responseMsg["isSuccess"] ? "text-green-400" : "text-red-400" }>{ responseMsg["msg"] }</span></>
+            )
+          }
+        </caption>
         <thead>
           <tr>
             <th>Work Order Owner</th>
