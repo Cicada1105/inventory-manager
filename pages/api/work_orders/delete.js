@@ -14,13 +14,13 @@ export default async function handler(req, res) {
       let db = client.db(process.env.MONGODB_DB);
 
       let workOrders = await db.collection("work_orders").deleteOne({ _id: new ObjectId(id) });
-
-      res.redirect(307,'/work_orders/list');
+      
+      res.status(200).json({ message: "Successfully removed order!" });
     } catch(e) {
       console.error(e);
       console.log("Error occured");
 
-      res.status(500).json({ err: "Error occured" });
+      res.status(500).json({ message: "Server error occured" });
     } finally {
       // End connection after closing of app or error
       await client.close();
