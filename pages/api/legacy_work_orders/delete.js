@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import mongoClient, { ObjectId } from "../../../utils/mongodb.js"
 
 export default async function handler(req, res) {

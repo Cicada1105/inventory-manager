@@ -1,51 +1,64 @@
+import { withIronSessionSsr } from "iron-session/next";
+
 import mongoClient from '../utils/mongodb.js'
+import { ironOptions } from '../utils/config.js'
 
-export default function Home({ types }) {
-
+export default function Home({ user }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">
-        Inventory Manager
+        Welcome { user["first_name"] } to the Inventory Manager
       </h1>
-      <dl style={{color:"white"}}>
-      {
-        JSON.parse(types).map((type,i) => {
-          return (
-            <div key={i}>
-              <dt>{type.name}</dt>
-              <dd>{type.restriction}</dd>
-            </div>
-          );
-        })
-      }
-      </dl>
+      <p className="text-center">Your Access Level: { user["access_type"] }</p>
     </>
   )
 }
 
-export async function getServerSideProps(context) {
-  let client;
-  try {
-    // Await the connection to the MongoDB URI
-    client = await mongoClient.connect();
+export const getServerSideProps = withIronSessionSsr(
+  async function getServerSideProps(context) {
+    // Obtain request parameter from context
+    let { req } = context;
+    
+    // Check if user object is available
+    if (req.session?.user) {
+      // Store user data
+      let user = req.session['user'];
 
-    let db = client.db(process.env.MONGODB_DB);
-    let types = await db.collection("access_types").find({}).toArray();
+      let client;
+      try {
+        // Await the connection to the MongoDB URI
+        client = await mongoClient.connect();
 
-    return {
-      props: {
-        types: JSON.stringify(types)
+        let db = client.db(process.env.MONGODB_DB);
+        let types = await db.collection("access_types").find({}).toArray();
+
+        return {
+          props: {
+            //types: JSON.stringify(types),
+            user
+          }
+        }
+      } catch(e) {
+        console.error(e);
+
+        return {
+          props: {
+            types: []
+          }
+        }
+      } finally {
+        // End connection after closing of app or error
+        await client.close();
       }
     }
-  } catch(e) {
-    console.error(e);
-    return {
-      props: {
-        types: []
+    else { // User is not logged in
+      return {
+        redirect: {
+          destination: "/login/",
+          permanent: true
+        }
       }
     }
-  } finally {
-    // End connection after closing of app or error
-    await client.close();
-  }
-}
+  },
+  ironOptions
+);
