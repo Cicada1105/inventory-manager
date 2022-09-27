@@ -1,8 +1,16 @@
-export default function Login() {
+import { useState } from 'react'
+import { useRouter } from 'next/router'
+
+export default function Login({ err }) {
 	return (
 		<section className="border-2 border-white w-fit m-auto mt-8 py-8 px-12 text-center">
-			<h1 className="pb-8">Login</h1>
-			<form className="w-80 m-auto" action="/api/login/auth"method="POST">
+			<h1 className="pb-4">Login</h1>
+	          {
+	            err && (
+	              <span className="block text-red-400">{ err }</span>
+	            )
+	          }
+			<form className="w-80 m-auto mt-4" action="/api/login/auth" method="POST">
 				<div className="flex justify-between mb-16">
 					<label htmlFor="username_input">Username:</label>
 					<input id="username_input" className="" type="text" name="username" />
@@ -15,4 +23,12 @@ export default function Login() {
 			</form>
 		</section>
 	);
+}
+
+export function getServerSideProps(context) {
+	let params = context.query;
+
+	return {
+		props: params
+	}
 }

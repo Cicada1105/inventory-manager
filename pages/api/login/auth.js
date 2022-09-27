@@ -35,7 +35,7 @@ async function AuthenticateMiddleware(req,res) {
       let user = await db.collection("users").findOne({ username });
 
       if (!user) // User does not exist, return to login
-        res.redirect(307,"/login/");
+        res.redirect(307,"/login?err='Invalid login credentials'");
       // Compare password with wtored password
       else if (bcrypt.compareSync(password, user['password'])) { // Valid credentials
         // Query database for access type
@@ -52,6 +52,8 @@ async function AuthenticateMiddleware(req,res) {
           ...userInfo
         }
       }
+      else  // Invalid password
+        res.redirect(307, "/login?err='Invalid login credentials'");
     } catch(e) {
       console.error(e);
       console.log("Error occured");

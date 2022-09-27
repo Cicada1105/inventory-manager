@@ -1,5 +1,5 @@
 import { withIronSessionSsr } from "iron-session/next";
-import { ironOptions } from '../utils/config.js'
+import { ironOptions } from './config.js'
 
 export default function authenticateUser(serverSidePageFunction) {
   return withIronSessionSsr(
