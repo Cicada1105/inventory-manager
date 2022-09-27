@@ -1,7 +1,6 @@
-import { withIronSessionSsr } from "iron-session/next";
-
 import mongoClient from '../utils/mongodb.js'
-import { ironOptions } from '../utils/config.js'
+
+import AuthenticateUser from '../utils/auth.js'
 
 export default function Home({ user }) {
   return (
@@ -14,51 +13,30 @@ export default function Home({ user }) {
   )
 }
 
-export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps(context) {
-    // Obtain request parameter from context
-    let { req } = context;
-    
-    // Check if user object is available
-    if (req.session?.user) {
-      // Store user data
-      let user = req.session['user'];
 
-      let client;
-      try {
-        // Await the connection to the MongoDB URI
-        client = await mongoClient.connect();
+export const getServerSideProps = AuthenticateUser(async function(req) {
+  // Store user data
+  let user = req.session['user'];
 
-        let db = client.db(process.env.MONGODB_DB);
-        let types = await db.collection("access_types").find({}).toArray();
+  let client;
+  try {
+    // Await the connection to the MongoDB URI
+    client = await mongoClient.connect();
 
-        return {
-          props: {
-            //types: JSON.stringify(types),
-            user
-          }
-        }
-      } catch(e) {
-        console.error(e);
+    let db = client.db(process.env.MONGODB_DB);
+    let types = await db.collection("access_types").find({}).toArray();
 
-        return {
-          props: {
-            types: []
-          }
-        }
-      } finally {
-        // End connection after closing of app or error
-        await client.close();
-      }
+    return {
+      props: { user }
     }
-    else { // User is not logged in
-      return {
-        redirect: {
-          destination: "/login/",
-          permanent: true
-        }
-      }
+  } catch(e) {
+    console.error(e);
+
+    return {
+      props: { user: {} }
     }
-  },
-  ironOptions
-);
+  } finally {
+    // End connection after closing of app or error
+    await client.close();
+  }
+});
