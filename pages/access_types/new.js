@@ -1,5 +1,6 @@
 //import Link from 'next/link'
 //import mongoClient from '../utils/mongodb.js'
+import AuthenticateUser from '../../utils/auth.js'
 
 export default function NewUser() {
 
@@ -10,6 +11,6 @@ export default function NewUser() {
   )
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = AuthenticateUser(async function(context) {
   return { props: {} }
-}
+});

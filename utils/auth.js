@@ -9,7 +9,7 @@ export default function authenticateUser(serverSidePageFunction) {
       
       // Check if user object is available
       if (req.session?.user)
-        return serverSidePageFunction(req);
+        return serverSidePageFunction(context);
       else  // User is not logged i
         return {
           redirect: {

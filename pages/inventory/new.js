@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import mongoClient, { ObjectId } from '../../utils/mongodb.js'
+import AuthenticateUser from '../../utils/auth.js'
 
-export default function NewStock({ locations }) {
+export default function NewStock({ locations, user }) {
   return (
     <>
       <h1 className="text-center mt-3 mb-6 text-3xl font-bold underline">New Stock</h1>
@@ -40,7 +41,7 @@ export default function NewStock({ locations }) {
   )
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = AuthenticateUser(async function(context) {
   // Attempt to obtain form search parameters
   let params = context.query;
 
@@ -91,4 +92,4 @@ export async function getServerSideProps(context) {
   }
 
   return { props: {} }
-}
+});

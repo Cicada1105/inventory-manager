@@ -14,7 +14,8 @@ export default function Home({ user }) {
 }
 
 
-export const getServerSideProps = AuthenticateUser(async function(req) {
+export const getServerSideProps = AuthenticateUser(async function(context) {
+  let { req } = context;
   // Store user data
   let user = req.session['user'];
 

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
+import AuthenticateUser from '../../utils/auth.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
@@ -38,7 +39,7 @@ export default function Users({ types }) {
   )
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = AuthenticateUser(async function(context) {
   let client;
   try {
     // Await the connection to the MongoDB URI
@@ -65,4 +66,4 @@ export async function getServerSideProps(context) {
     // End connection after closing of app or error
     await client.close();
   }
-}
+});

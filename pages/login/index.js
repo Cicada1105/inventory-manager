@@ -1,6 +1,3 @@
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-
 export default function Login({ err }) {
 	return (
 		<section className="border-2 border-white w-fit m-auto mt-8 py-8 px-12 text-center">

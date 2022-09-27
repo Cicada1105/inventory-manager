@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
+import AuthenticateUser from '../../utils/auth.js'
 
 export default function NewLocation() {
   return (
@@ -23,7 +24,7 @@ export default function NewLocation() {
   )
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = AuthenticateUser(async function(context) {
   // Attempt to obtain form search parameters
   let params = context.query;
 
@@ -62,4 +63,4 @@ export async function getServerSideProps(context) {
   }
 
   return { props: {} }
-}
+});

@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
+import AuthenticateUser from '../../utils/auth.js'
 
-export default function Inventory({ items }) {
-
+export default function Inventory({ items, user }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">
@@ -39,7 +39,12 @@ export default function Inventory({ items }) {
   )
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = AuthenticateUser(async function (context) {
+  let { req } = context;
+  
+  // Store user data
+  let user = req.session.user;
+
   let client;
   try {
     // Await the connection to the MongoDB URI
@@ -58,7 +63,8 @@ export async function getServerSideProps(context) {
 
     return {
       props: {
-        items: JSON.stringify(stock)
+        items: JSON.stringify(stock),
+        user
       }
     }
   } catch(e) {
@@ -66,11 +72,12 @@ export async function getServerSideProps(context) {
     console.log("Error occured");
     return {
       props: {
-        items: JSON.stringify([])
+        items: JSON.stringify([]),
+        user
       }
     }
   } finally {
     // End connection after closing of app or error
     await client.close();
   }
-}
+});

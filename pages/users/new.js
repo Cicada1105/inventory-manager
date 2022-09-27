@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import mongoClient from '../../utils/mongodb'
+import AuthenticateUser from '../../utils/auth.js'
 import bcrypt from 'bcrypt'
 import { ObjectId } from 'mongodb'
 
@@ -42,7 +43,7 @@ export default function NewUser({ accessTypes }) {
   )
 }
 
-export async function getServerSideProps(context) {
+export const getServerSideProps = AuthenticateUser(async function(context) {
   let client;
   let params = context.query;
 
@@ -103,4 +104,4 @@ export async function getServerSideProps(context) {
   }
 
   return { props: {} }
-}
+});
