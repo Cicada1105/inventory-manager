@@ -3,6 +3,8 @@ import mongoClient from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
 export default function Inventory({ items, user }) {
+  const hasAccess = (user.access_type === "Admin") || (user.access_type === "Super User")
+
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">
@@ -14,8 +16,14 @@ export default function Inventory({ items, user }) {
           <tr>
             <th>Name</th>
             <th>Brand</th>
-            <th>Quantity</th>
-            <th>Location</th>
+            {
+              hasAccess && (
+                <>
+                  <th>Quantity</th>
+                  <th>Location</th>
+                </>
+              )
+            }
             <th>Description</th>
           </tr>
         </thead>
@@ -26,8 +34,14 @@ export default function Inventory({ items, user }) {
               <tr key={i}>
                 <td>{item.name}</td>
                 <td>{item.brand}</td>
-                <td>{item.quantity}</td>
-                <td>{item.location[0]["name"]}</td>
+                {
+                  hasAccess && (
+                    <>
+                      <td>{item.quantity}</td>
+                      <td>{item.location[0]["name"]}</td>
+                    </>
+                  )
+                }
                 <td>{item.description}</td>
               </tr>
             );

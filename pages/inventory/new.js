@@ -42,53 +42,68 @@ export default function NewStock({ locations, user }) {
 }
 
 export const getServerSideProps = AuthenticateUser(async function(context) {
-  // Attempt to obtain form search parameters
-  let params = context.query;
+  let { req } = context;
 
-  let client;
-  try {
-    // Await the connection to the MongoDB URI
-    client = await mongoClient.connect();
+  // Store user data
+  let user = req.session.user;
 
-    let db = client.db(process.env.MONGODB_DB);
+  if (user.access_type === "Admin") {
+    // Attempt to obtain form search parameters
+    let params = context.query;
 
-    if (params.name) {
-      await db.collection("stock").insertOne({
-        name: params["name"],
-        description: params["description"],
-        brand: params["brand"],
-        quantity: params["quantity"],
-        location_id: new ObjectId(params["location"])
-      });
+    let client;
+    try {
+      // Await the connection to the MongoDB URI
+      client = await mongoClient.connect();
+
+      let db = client.db(process.env.MONGODB_DB);
+
+      if (params.name) {
+        await db.collection("stock").insertOne({
+          name: params["name"],
+          description: params["description"],
+          brand: params["brand"],
+          quantity: params["quantity"],
+          location_id: new ObjectId(params["location"])
+        });
+
+        return {
+          redirect: {
+            destination: "/inventory/list",
+            permanent:false
+          }
+        }
+      }
+      else {
+        let locations = await db.collection("locations").find({}).toArray();
+
+        return {
+          props: { 
+            locations: JSON.stringify(locations)
+          }
+        }
+      }
+    } catch(e) {
+      console.error(e);
+      console.log("Error occured");
 
       return {
         redirect: {
-          destination: "/inventory/list",
-          permanent:false
+          destination: "/inventory/new"
         }
       }
+    } finally {
+      // End connection after closing of app or error
+      await client.close();
     }
-    else {
-      let locations = await db.collection("locations").find({}).toArray();
-
-      return {
-        props: { 
-          locations: JSON.stringify(locations)
-        }
-      }
-    }
-  } catch(e) {
-    console.error(e);
-    console.log("Error occured");
-
+  }
+  else {
     return {
       redirect: {
-        destination: "/inventory/new"
+        destination: "/403",
+        permanent: false
       }
     }
-  } finally {
-    // End connection after closing of app or error
-    await client.close();
   }
 
   return { props: {} }
