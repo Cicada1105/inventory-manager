@@ -2,7 +2,7 @@ import Link from 'next/link'
 import mongoClient, { ObjectId } from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
-export default function NewWorkOrder({ items }) {
+export default function NewWorkOrder({ items, user }) {
   function handleInputChange(e) {
     // Retrieve element that triggered input change
     let el = e.target;
@@ -18,10 +18,14 @@ export default function NewWorkOrder({ items }) {
       <Link href="/work_orders/list">Back</Link>
       <section className="w-fit m-auto border-solid border-2 border-white p-8">
         <form onInput={ handleInputChange }>
-          <div className="flex justify-between gap-20 mb-8">
-            <label htmlFor="workOrderAddInventory" className="inline">Adding Inventory</label>
-            <input id="workOrderAddInventory" type="checkbox" name="add_inventory" />
-          </div>
+          {
+            // Add inventory is meant only for Admins adding items to inventory
+            (user.access_type === "Admin") &&
+            <div className="flex justify-between gap-20 mb-8">
+              <label htmlFor="workOrderAddInventory" className="inline">Adding Inventory</label>
+              <input id="workOrderAddInventory" type="checkbox" name="add_inventory" />
+            </div>
+          }
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="workOrderItem">Item:</label>
             <select id="workOrderItem" name="item">
@@ -52,6 +56,11 @@ export default function NewWorkOrder({ items }) {
 }
 
 export const getServerSideProps = AuthenticateUser(async function(context) {
+  let { req } = context;
+
+  // Retrieve user from the session
+  let user = req.session.user;
+
   // Attempt to obtain form search parameters
   let params = context.query;
 
@@ -90,7 +99,8 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
 
       return {
         props: { 
-          items: JSON.stringify(stock)
+          items: JSON.stringify(stock),
+          user
         }
       }
     }

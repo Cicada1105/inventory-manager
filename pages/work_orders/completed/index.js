@@ -6,12 +6,13 @@ import { faX } from '@fortawesome/free-solid-svg-icons'
 
 import DeleteConfirmation from '../components/DeleteConfirmation.js'
 
-export default function CompletedWorkOrders({ orders }) {
+export default function CompletedWorkOrders({ orders, user }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [workOrder,setWorkOrder] = useState(null);
   const [responseMsg, setResponseMsg] = useState(null);
 
   const routes = useRouter();
+  const hasAccess = user.access_type === "Super User";
 
   function handleDisplayModal(id, user, item, num_items) {
     // Update current display of modal
@@ -78,7 +79,9 @@ export default function CompletedWorkOrders({ orders }) {
             <th>Date Ordered</th>
             <th>Date Fulfilled</th>
             <th>Reason</th>
-            <th>Control Order</th>
+            {
+              hasAccess && <th>Control Order</th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -93,11 +96,14 @@ export default function CompletedWorkOrders({ orders }) {
                 <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
                 <td>{(new Date(order.date_fulfilled)).toLocaleDateString()}</td>
                 <td>{order.reason}</td>
-                <td>
-                  <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
-                    <FontAwesomeIcon icon={faX} className="hover:cursor-pointer" />
-                  </span>
-                </td>
+                {
+                  hasAccess && 
+                  <td>
+                    <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
+                      <FontAwesomeIcon icon={faX} className="hover:cursor-pointer" />
+                    </span>
+                  </td>
+                }
               </tr>
             );
           })
