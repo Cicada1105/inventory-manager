@@ -6,12 +6,13 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
 import CompleteConfirmation from '../components/CompleteConfirmation.js'
 
-export default function IncompleteWorkOrders({ orders }) {
+export default function IncompleteWorkOrders({ orders, user }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [workOrder,setWorkOrder] = useState(null);
   const [responseMsg, setResponseMsg] = useState(null);
 
   const routes = useRouter();
+  const hasAccess = user.access_type === "Admin";
 
   function handleDisplayModal(id, user, item, num_items) {
     setDisplayModal(true);
@@ -75,7 +76,9 @@ export default function IncompleteWorkOrders({ orders }) {
             <th>Priority</th>
             <th>Date Ordered</th>
             <th>Reason</th>
-            <th>Control Order</th>
+            {
+              hasAccess && <th>Control Order</th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -89,11 +92,14 @@ export default function IncompleteWorkOrders({ orders }) {
                 <td>{order.priority}</td>
                 <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
                 <td>{order.reason}</td>
-                <td>
-                  <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
-                    <FontAwesomeIcon className="hover:cursor-pointer" icon={faCheck} />
-                  </span>
-                </td>
+                {
+                  hasAccess && 
+                  <td>
+                    <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
+                      <FontAwesomeIcon className="hover:cursor-pointer" icon={faCheck} />
+                    </span>
+                  </td>
+                }
               </tr>
             );
           })
