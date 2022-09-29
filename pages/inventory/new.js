@@ -47,7 +47,8 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
   // Store user data
   let user = req.session.user;
 
-  if (user.access_type === "Admin") {
+  let userPageRestrictions = user.restrictions["stock"];
+  if (userPageRestrictions.includes("new")) {
     // Attempt to obtain form search parameters
     let params = context.query;
 

@@ -49,6 +49,7 @@ async function AuthenticateMiddleware(req,res) {
         // Return object containing necessary user information
         return {
           access_type: accessType["name"],
+          restrictions: accessType["restrictions"],
           ...userInfo
         }
       }

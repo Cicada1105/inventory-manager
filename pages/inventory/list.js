@@ -2,9 +2,9 @@ import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
-export default function Inventory({ items, user }) {
-  const hasAccess = (user.access_type === "Admin") || (user.access_type === "Super User")
-
+export default function Inventory({ items, user }) { 
+  const hasAccess = user.restrictions["inventory"].includes("read");
+  
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">
