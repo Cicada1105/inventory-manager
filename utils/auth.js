@@ -52,8 +52,7 @@ function authorizeUser(context, callback) {
     default:
       access = "";
   }
-  console.log(access);
-  console.log(user.restrictions[page]?.includes(access));
+  
   // Check if user has access to the current page
   if ((resolvedUrl === "/") || user.restrictions[page]?.includes(access))
     return callback(context);
