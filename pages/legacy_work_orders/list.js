@@ -60,7 +60,7 @@ export default function WorkOrders({ orders }) {
             return (
               <tr key={i}>
                 <td>{order["user_name"]}</td>
-                <td>{order["stock"][0]["name"]}</td>
+                <td>{order["inventory"][0]["name"]}</td>
                 <td>{order.quantity_withdrawn}</td>
                 <td>{order.priority}</td>
                 <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
@@ -93,10 +93,10 @@ export const getServerSideProps = AuthenticateUser(async function (context) {
     let workOrders = await db.collection("legacy_work_orders").aggregate([
       {
         $lookup: {
-          from: "stock",
-          localField:"stock_id",
+          from: "inventory",
+          localField:"inventory_id",
           foreignField:"_id",
-          as:"stock"
+          as:"inventory"
         }
       }
     ]).toArray();

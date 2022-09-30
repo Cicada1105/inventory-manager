@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       /*
         The resulting query does the following:
         1. Locate the work order specifie by 'id'
-        2. Left join the work order with the stock collection, storing the items that the work order references via "item"
+        2. Left join the work order with the inventory collection, storing the items that the work order references via "item"
         3. Turn the newly joined "item" array field into an object by creating an object for each item in the array 
             (in this case only one item -> the inventory item the work order references)
         4. Subtract the work order quantity_withdrawn from the quantity field of the "item" object
@@ -29,8 +29,8 @@ export default async function handler(req, res) {
         },
         {
           $lookup: {
-            from: "stock",
-            localField: "stock_id",
+            from: "inventory",
+            localField: "inventory_id",
             foreignField: "_id",
             as: "item"
           }

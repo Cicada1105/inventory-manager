@@ -87,7 +87,7 @@ export default function IncompleteWorkOrders({ orders, user }) {
             return (
               <tr key={i}> 
                 <td>{order["user"][0]["first_name"]} {order["user"][0]["last_name"]}</td>
-                <td>{order["stock"][0]["name"]}</td>
+                <td>{order["inventory"][0]["name"]}</td>
                 <td>{order.quantity_withdrawn}</td>
                 <td>{order.priority}</td>
                 <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
@@ -95,7 +95,7 @@ export default function IncompleteWorkOrders({ orders, user }) {
                 {
                   hasAccess && 
                   <td>
-                    <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
+                    <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["inventory"][0]["name"], order["quantity_withdrawn"])}>
                       <FontAwesomeIcon className="hover:cursor-pointer" icon={faCheck} />
                     </span>
                   </td>

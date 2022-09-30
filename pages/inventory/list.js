@@ -66,7 +66,7 @@ export const getServerSideProps = AuthenticateUser(async function (context) {
 
     let db = client.db(process.env.MONGODB_DB);
 
-    let stock = await db.collection("stock").aggregate([{
+    let inventory = await db.collection("inventory").aggregate([{
       $lookup: {
         from:"locations",
         localField:"location_id",
@@ -77,7 +77,7 @@ export const getServerSideProps = AuthenticateUser(async function (context) {
 
     return {
       props: {
-        items: JSON.stringify(stock),
+        items: JSON.stringify(inventory),
         user
       }
     }

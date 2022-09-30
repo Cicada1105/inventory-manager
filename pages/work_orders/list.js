@@ -27,56 +27,47 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
   // Retrieve user from the session
   let user = req.session.user;
 
-  if ((user.access_type === "Admin") || (user.access_type === "Super User")) {
-    let client;
-    try {
-      // Await the connection to the MongoDB URI
-      client = await mongoClient.connect();
+  let client;
+  try {
+    // Await the connection to the MongoDB URI
+    client = await mongoClient.connect();
 
-      let db = client.db(process.env.MONGODB_DB);
+    let db = client.db(process.env.MONGODB_DB);
 
-      let workOrders = await db.collection("work_orders").aggregate([
-        {
-          $lookup: {
-            from:"users",
-            localField:"user_id",
-            foreignField:"_id",
-            as:"user"
-          }
-        },
-        {
-          $lookup: {
-            from: "stock",
-            localField:"stock_id",
-            foreignField:"_id",
-            as:"stock"
-          }
+    let workOrders = await db.collection("work_orders").aggregate([
+      {
+        $lookup: {
+          from:"users",
+          localField:"user_id",
+          foreignField:"_id",
+          as:"user"
         }
-      ]).toArray();
-      return {
-        props: {
-          orders: JSON.stringify(workOrders),
-          user
+      },
+      {
+        $lookup: {
+          from: "inventory",
+          localField:"inventory_id",
+          foreignField:"_id",
+          as:"inventory"
         }
       }
-    } catch(e) {
-      console.error(e);
-      console.log("Error occured");
-      return {
-        props: {
-          orders: JSON.stringify([])
-        }
-      }
-    } finally {
-      // End connection after closing of app or error
-      await client.close();
-    }
-  } else {
+    ]).toArray();
     return {
-      redirect: {
-        destination: "/403",
-        permanent: false
+      props: {
+        orders: JSON.stringify(workOrders),
+        user
       }
     }
+  } catch(e) {
+    console.error(e);
+    console.log("Error occured");
+    return {
+      props: {
+        orders: JSON.stringify([])
+      }
+    }
+  } finally {
+    // End connection after closing of app or error
+    await client.close();
   }
 });
