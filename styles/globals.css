@@ -19,6 +19,16 @@ a {
   box-sizing: border-box;
 }
 
+table, th, td {
+  border: 2px solid white;
+}
+table {
+  text-align: center;
+}
+th, td {
+  padding: 0.5rem 0.75rem;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

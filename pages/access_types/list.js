@@ -3,19 +3,24 @@ import mongoClient from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faX } from '@fortawesome/free-solid-svg-icons'
+import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons'
 
 export default function Users({ types }) {
-
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Access Types</h1>
       <Link href="/access_types/new">New Access Type</Link>
-      <table style={{color:"white"}}>
+      <table className="m-auto">
         <thead>
           <tr>
             <th>Name</th>
             <th>Restriction Level</th>
+            <th className="w-32">Access Types</th>
+            <th>Inventory</th>
+            <th className="w-32">Legacy Work Orders</th>
+            <th className="w-32">Locations</th>
+            <th className="w-32">Users</th>
+            <th className="w-32">Work Orders</th>
             <th></th>
           </tr>
         </thead>
@@ -26,7 +31,15 @@ export default function Users({ types }) {
               <tr key={i}>
                 <td>{type.name}</td>
                 <td>{type.restriction}</td>
+                {
+                  Object.keys(type["restrictions"]).map((page,i) => 
+                    type["restrictions"][page].length === 0 ?
+                    <td key={i}>No Access</td> :
+                    <td key={i}>{type["restrictions"][page].join(", ")}</td>
+                  )
+                }
                 <td>
+                  <FontAwesomeIcon icon={faPenToSquare} />
                   <FontAwesomeIcon icon={faX} />
                 </td>
               </tr>
