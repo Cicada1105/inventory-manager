@@ -2,8 +2,12 @@ import mongoClient from '../utils/mongodb.js'
 
 import AuthenticateUser from '../utils/auth.js'
 
-export default function Home({ user }) {
+import PagePreview from './collection_preview.js'
+
+export default function Home({ collections, user }) {
   const restrictions = user.restrictions;
+  const parsedCollections = JSON.parse(collections);
+
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">
@@ -12,21 +16,9 @@ export default function Home({ user }) {
       <p className="text-center">Your Access Level: <span className="underline">{ user["access_type"] }</span></p>
       <p className="text-center">What you have access to:</p>
       {
-        Object.keys(restrictions).map((page, i) => {
-          return (
-            (restrictions[page].length !== 0) &&
-            <article key={i} className="w-48 m-auto">
-              <h5 className="underline">{ page }</h5>
-              <ol className="list-decimal list-inside text-center mb-8">
-                {
-                  restrictions[page].map((access,i) =>
-                    <li key={i}>{ access } </li>
-                  )
-                }
-              </ol>
-            </article>
-          )
-        })
+        Object.entries(parsedCollections).map((entry, i) => 
+          <PagePreview key={i} name={entry[0]} page={entry[1]} />
+        )
       }
     </>
   )
@@ -44,10 +36,28 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
     client = await mongoClient.connect();
 
     let db = client.db(process.env.MONGODB_DB);
-    let types = await db.collection("access_types").find({}).toArray();
+
+    /* Query database for collections the current user has access to */
+    // Obtain names of collections the current user has access to
+    let userAccessibleCollections = Object.keys(user["restrictions"]).filter(page => user["restrictions"].length !== 0);
+    // Retrieve all collections
+    let collections = await db.collections();
+    // Filter out only the collections that the current user has access to (As filtered previously)
+    let userCollections = collections.filter(collection => userAccessibleCollections.includes(collection["collectionName"]));
+
+    // List out first three of each collection
+    let userCollectionsLimited = {};
+    for (let collection of userCollections) {
+      let result = await collection.find({}).limit(3).toArray();
+      let nameOfCurrColl = collection["collectionName"];
+      userCollectionsLimited[nameOfCurrColl] = result;
+    }
 
     return {
-      props: { user }
+      props: { 
+        collections: JSON.stringify(userCollectionsLimited),
+        user
+      }
     }
   } catch(e) {
     console.error(e);
@@ -57,6 +67,6 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
     }
   } finally {
     // End connection after closing of app or error
-    await client.close();
+    //await client.close();
   }
 });
