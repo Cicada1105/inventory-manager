@@ -17,7 +17,7 @@ export default function NewWorkOrder({ items, user }) {
       <h1 className="text-center mt-3 mb-6 text-3xl font-bold underline">New Work Order</h1>
       <Link href="/work_orders/list">Back</Link>
       <section className="w-fit m-auto border-solid border-2 border-white p-8">
-        <form onInput={ handleInputChange }>
+        <form action="/work_orders/new" onInput={ handleInputChange }>
           {
             // Add inventory is meant only for Admins adding items to inventory
             (user.access_type === "Admin") &&
@@ -79,12 +79,12 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
 
       await db.collection("work_orders").insertOne({
         quantity_withdrawn: updatedQuantity,
-        priority: params["priority"],
+        priority: parseInt(params["priority"]),
         reason: params["reason"],
         is_fulfilled: false,
         date_ordered: new Date(),
-        user_id: new ObjectId("6327b871565477f77570facb"), // Replace with logged in user's id
-        stock_id: new ObjectId(params["item"])
+        user_id: new ObjectId(user["_id"]), // Replace with logged in user's id
+        inventory_id: new ObjectId(params["item"])
       });
 
       return {

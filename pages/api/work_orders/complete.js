@@ -69,7 +69,7 @@ export default async function handler(req, res) {
       // Else, complete the order by updating the stock, changing the order to fulfilled and recording the date the order was fulfilled on
       else {
         // Update stock quantity
-        await db.collection("stock").updateOne({
+        await db.collection("inventory").updateOne({
           _id: new ObjectId(updatedItem["_id"])
         }, {
           $set: {

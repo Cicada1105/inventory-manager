@@ -28,12 +28,17 @@ function authorizeUser(context, callback) {
 
   let user = req.session.user;
   // Retrieve users permissions for current page
-  let paths = resolvedUrl.split("/")
+  let paths = resolvedUrl.split("/"); // ['',page,operation[?query]]
+  // Store the page that the user is trying to access
   let page = paths[1];
+  // Check if there is a query: url = /url/path?query -> then remove query
+  let hasUrlQuery = Object.keys(context.query).length !== 0;
+  let operation = hasUrlQuery ? paths[2].split("?")[0] : paths[2];
+
   let userPageRestrictions = user.restrictions[page];
   // Store action user is attempting to access
   let access;
-  switch(paths[2]) {
+  switch(operation) {
     case "new":
       access = "create";
       break;
