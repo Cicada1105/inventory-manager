@@ -44,7 +44,7 @@ async function AuthenticateMiddleware(req,res) {
         });
 
         // Remove unnecessary information from user data
-        let { _id, password, date_registered, access_type_id, ...userInfo } = user;
+        let { password, date_registered, access_type_id, ...userInfo } = user;
 
         // Return object containing necessary user information
         return {

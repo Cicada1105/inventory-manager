@@ -1,4 +1,4 @@
-import mongoClient from '../utils/mongodb.js'
+import mongoClient, { ObjectId } from '../utils/mongodb.js'
 
 import AuthenticateUser from '../utils/auth.js'
 
@@ -39,7 +39,7 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
 
     /* Query database for collections the current user has access to */
     // Obtain names of collections the current user has access to
-    let userAccessibleCollections = Object.keys(user["restrictions"]).filter(page => user["restrictions"].length !== 0);
+    let userAccessibleCollections = Object.keys(user["restrictions"]).filter(page => user["restrictions"][page].length !== 0);
     // Retrieve all collections
     let collections = await db.collections();
     // Filter out only the collections that the current user has access to (As filtered previously)
@@ -51,6 +51,13 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
       let result = await collection.find({}).limit(3).toArray();
       let nameOfCurrColl = collection["collectionName"];
       userCollectionsLimited[nameOfCurrColl] = result;
+      // Check if collection name equals work_orders then retrieve work orders for current user
+      if (nameOfCurrColl === "work_orders") {
+        let result = await collection.find({
+          user_id: new ObjectId(user["_id"])
+        }).limit(3).toArray();
+        userCollectionsLimited["my_work_orders"] = result;
+      }
     }
 
     return {
@@ -65,8 +72,5 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
     return {
       props: { user: {} }
     }
-  } finally {
-    // End connection after closing of app or error
-    //await client.close();
   }
 });

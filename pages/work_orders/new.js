@@ -95,7 +95,7 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
       }
     }
     else {
-      let stock = await db.collection("stock").find({}).toArray();
+      let stock = await db.collection("inventory").find({}).toArray();
 
       return {
         props: { 
