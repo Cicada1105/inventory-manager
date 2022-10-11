@@ -14,7 +14,6 @@ export default function Users({ types }) {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Restriction Level</th>
             <th className="w-32">Access Types</th>
             <th>Inventory</th>
             <th className="w-32">Legacy Work Orders</th>
@@ -30,7 +29,6 @@ export default function Users({ types }) {
             return (
               <tr key={i}>
                 <td>{type.name}</td>
-                <td>{type.restriction}</td>
                 {
                   Object.keys(type["restrictions"]).map((page,i) => 
                     type["restrictions"][page].length === 0 ?

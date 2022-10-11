@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import { formatTitle } from '../utils/formatting.js'
+
 export default function PagePreview({ name, page }) {
 	let headers = (page.length > 0) ? Object.keys(page[0]) : [];
 	// Remove all fields that have "id" in the title, password column and restrictions column removing respective columns
@@ -13,17 +15,7 @@ export default function PagePreview({ name, page }) {
 
 	return (
 		<>
-			<h1 className="text-center mt-3 text-3xl font-bold underline">{
-				name.split("_").map(w => {
-		  			let letters = w.split("");
-		  			let splicedArray = letters.splice(0,1);
-
-		  			let firstLetterToUpper = splicedArray[0]?.toUpperCase();
-		  			let restOfWord = letters.join("");
-
-		  			return restOfWord.length > 0 ? firstLetterToUpper.concat(restOfWord) : firstLetterToUpper;
-				}).join(" ")
-			}</h1>
+			<h1 className="text-center mt-3 text-3xl font-bold underline">{ formatTitle(name) }</h1>
 	  		<Link href={`/${name}/list`}>View More</Link>
 	  		{
 	  			page.length === 0 ? 
@@ -32,17 +24,9 @@ export default function PagePreview({ name, page }) {
 					<thead>
 					  <tr>
 					  {
-					  	filteredHeaders.map((header, i) => <th key={i} style={{ width: `${colWidth}%` }}>{ 
-					  		header.split("_").map(w => { 
-					  			let letters = w.split("");
-					  			let splicedArray = letters.splice(0,1);
-
-					  			let firstLetterToUpper = splicedArray[0]?.toUpperCase();
-					  			let restOfWord = letters.join("");
-
-					  			return restOfWord.length > 0 ? firstLetterToUpper.concat(restOfWord) : firstLetterToUpper;
-					  		}).join(" ") 
-					  	}</th>)
+					  	filteredHeaders.map((header, i) => 
+					  		<th key={i} style={{ width: `${colWidth}%` }}>{ formatTitle(header) }</th>
+					  	)
 					  }
 					  </tr>
 					</thead>
