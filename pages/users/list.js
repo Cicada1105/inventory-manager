@@ -46,7 +46,9 @@ export default function Users({ users }) {
                 <td>{user.access_type[0]["name"]}</td>
                 <td>{(new Date(user.date_registered)).toLocaleDateString()}</td>
                 <td>
-                  <FontAwesomeIcon icon={faPenToSquare} />
+                  <Link href={`/users/update/${user["_id"].toString()}`}>
+                    <FontAwesomeIcon icon={faPenToSquare} />
+                  </Link>
                   <FontAwesomeIcon icon={faX} onClick={() => handleDisplayModal(user["_id"],user["first_name"].concat(" ",user["last_name"]))} />
                 </td>
               </tr>
