@@ -6,7 +6,12 @@ import AuthenticateUser from '../../utils/auth.js'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 
-export default function Users({ locations }) {
+export default function Locations({ locations, user }) {
+  const userRestrictions = user.restrictions["locations"];
+  // Check if user has create and update access
+  const hasCreateAccess = userRestrictions.includes("create");
+  const hasUpdateAccess = userRestrictions.includes('update');
+
   const routes = useRouter();
 
   return (
@@ -16,16 +21,22 @@ export default function Users({ locations }) {
         <span className="mr-4 hover:underline">
           <Link href="/">Back</Link>
         </span>
-        <span className="hover:underline">
-          <Link href="/locations/new">New Location</Link>
-        </span>
+        {
+          hasCreateAccess && 
+          <span className="hover:underline">
+            <Link href="/locations/new">New Location</Link>
+          </span>
+        }
       </div>
       <table className="m-auto mt-8 text-center" style={{color:"white"}}>
         <thead>
           <tr>
             <th>Name</th>
             <th>Description</th>
-            <th></th>
+            {
+              hasUpdateAccess &&
+              <th></th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -35,9 +46,12 @@ export default function Users({ locations }) {
               <tr key={i}>
                 <td>{location.name}</td>
                 <td>{location.description}</td>
-                <td>
-                  <FontAwesomeIcon onClick={() => routes.push(`/locations/update?id=${location._id}`)} icon={faPenToSquare} />
-                </td>
+                {
+                  hasUpdateAccess && 
+                  <td>
+                    <FontAwesomeIcon onClick={() => routes.push(`/locations/update?id=${location._id}`)} icon={faPenToSquare} />
+                  </td>
+                }
               </tr>
             );
           })
@@ -49,6 +63,11 @@ export default function Users({ locations }) {
 }
 
 export const getServerSideProps = AuthenticateUser(async function(context) {
+  let { req } = context;
+  
+  // Store user data
+  let user = req.session.user;
+
   let client;
   try {
     // Await the connection to the MongoDB URI
@@ -60,7 +79,8 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
 
     return {
       props: {
-        locations: JSON.stringify(locations)
+        locations: JSON.stringify(locations),
+        user
       }
     }
   } catch(e) {
@@ -68,7 +88,8 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
     console.log("Error occured");
     return {
       props: {
-        locations: JSON.stringify([])
+        locations: JSON.stringify([]),
+        user
       }
     }
   } finally {

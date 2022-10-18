@@ -100,7 +100,7 @@ export default function WorkOrders({ orders }) {
             <th>Date Ordered</th>
             <th>Date Fulfilled</th>
             <th>Reason</th>
-            <th>Control Order</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

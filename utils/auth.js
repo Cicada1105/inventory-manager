@@ -60,7 +60,7 @@ function authorizeUser(context, callback) {
   
   // Check if user has access to the current page
   //  note: all users have access to the home ("/") page and the my_work_orders page
-  if ((resolvedUrl === "/") || (resolvedUrl.startsWith("/my_work_orders")) || user.restrictions[page]?.includes(access))
+  if ((resolvedUrl === "/") || (resolvedUrl.startsWith("/my_work_orders")) || (resolvedUrl === "/work_orders/new") || user.restrictions[page]?.includes(access))
     return callback(context);
   else
     return {

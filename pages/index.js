@@ -51,14 +51,12 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
       let result = await collection.find({}).limit(3).toArray();
       let nameOfCurrColl = collection["collectionName"];
       userCollectionsLimited[nameOfCurrColl] = result;
-      // Check if collection name equals work_orders then retrieve work orders for current user
-      if (nameOfCurrColl === "work_orders") {
-        let result = await collection.find({
-          user_id: new ObjectId(user["_id"])
-        }).limit(3).toArray();
-        userCollectionsLimited["my_work_orders"] = result;
-      }
     }
+
+    let result = await db.collection("work_orders").find({
+      user_id: new ObjectId(user["_id"])
+    }).limit(3).toArray();
+    userCollectionsLimited["my_work_orders"] = result;
 
     return {
       props: { 

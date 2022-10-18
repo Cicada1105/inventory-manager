@@ -5,7 +5,13 @@ import AuthenticateUser from '../../utils/auth.js'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons'
 
-export default function Users({ types }) {
+export default function Users({ types, user }) {
+  const userRestrictions = user.restrictions["access_types"];
+  // Check if user has create and update access
+  const hasCreateAccess = userRestrictions.includes("create");
+  const hasUpdateAccess = userRestrictions.includes('update');
+  const hasDeleteAccess = userRestrictions.includes('delete');
+
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Access Types</h1>
@@ -13,9 +19,12 @@ export default function Users({ types }) {
         <span className="mr-4 hover:underline">
           <Link href="/">Back</Link>
         </span>
-        <span className="hover:underline">
-          <Link href="/access_types/new">New Access Type</Link>
-        </span>
+        {
+          hasCreateAccess && 
+          <span className="hover:underline">
+            <Link href="/access_types/new">New Access Type</Link>
+          </span>
+        }
       </div>
       <table className="m-auto">
         <thead>
@@ -27,7 +36,10 @@ export default function Users({ types }) {
             <th className="w-32">Locations</th>
             <th className="w-32">Users</th>
             <th className="w-32">Work Orders</th>
-            <th></th>
+            {
+              hasUpdateAccess && 
+              <th></th>
+            }
           </tr>
         </thead>
         <tbody>
@@ -43,12 +55,21 @@ export default function Users({ types }) {
                     <td key={i}>{type["restrictions"][page].join(", ")}</td>
                   )
                 }
-                <td>
-                  <Link href={`/access_types/update/${type["_id"].toString()}`}>
-                    <FontAwesomeIcon icon={faPenToSquare} />
-                  </Link>
-                  <FontAwesomeIcon icon={faX} />
-                </td>
+                {
+                  (hasUpdateAccess || hasDeleteAccess) && (
+                    <td>
+                      {
+                        hasUpdateAccess && 
+                        <Link href={`/access_types/update/${type["_id"].toString()}`}>
+                          <FontAwesomeIcon icon={faPenToSquare} />
+                        </Link>
+                      }
+                      {
+                        hasDeleteAccess && <FontAwesomeIcon icon={faX} />
+                      }
+                    </td>
+                  )
+                }
               </tr>
             );
           })
@@ -60,6 +81,11 @@ export default function Users({ types }) {
 }
 
 export const getServerSideProps = AuthenticateUser(async function(context) {
+  let { req } = context;
+
+  // Store user data
+  let user = req.session["user"];
+
   let client;
   try {
     // Await the connection to the MongoDB URI
@@ -71,7 +97,8 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
 
     return {
       props: {
-        types: JSON.stringify(types)
+        types: JSON.stringify(types),
+        user
       }
     }
   } catch(e) {
@@ -79,7 +106,8 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
     console.log("Error occured");
     return {
       props: {
-        types: JSON.stringify([])
+        types: JSON.stringify([]),
+        user
       }
     }
   } finally {

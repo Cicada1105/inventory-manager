@@ -3,7 +3,10 @@ import mongoClient from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
 export default function Inventory({ items, user }) { 
-  const hasAccess = user.restrictions["inventory"].includes("read");
+  const userRestrictions = user.restrictions["inventory"];
+  // Check if user has special create and read access
+  const hasCreateAccess = userRestrictions.includes("create");
+  const hasHigherReadAccess = userRestrictions.includes("read");
   
   return (
     <>
@@ -14,9 +17,12 @@ export default function Inventory({ items, user }) {
         <span className="mr-4 hover:underline">
           <Link href="/">Back</Link>
         </span>
-        <span className="hover:underline">
-          <Link href="/inventory/new">New Stock</Link>
-        </span>
+        {
+          hasCreateAccess && 
+          <span className="hover:underline">
+            <Link href="/inventory/new">New Stock</Link>
+          </span>
+        }
       </div>
       <table className="m-auto mt-8 text-center" style={{color:"white"}}>
         <thead>
@@ -24,7 +30,7 @@ export default function Inventory({ items, user }) {
             <th>Name</th>
             <th>Brand</th>
             {
-              hasAccess && (
+              hasHigherReadAccess && (
                 <>
                   <th>Quantity</th>
                   <th>Location</th>
@@ -42,7 +48,7 @@ export default function Inventory({ items, user }) {
                 <td>{item.name}</td>
                 <td>{item.brand}</td>
                 {
-                  hasAccess && (
+                  hasHigherReadAccess && (
                     <>
                       <td>{item.quantity}</td>
                       <td>{item.location[0]["name"]}</td>
