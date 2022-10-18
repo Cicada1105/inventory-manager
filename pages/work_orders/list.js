@@ -14,6 +14,12 @@ export default function WorkOrders({ orders, user }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Work Orders</h1>
+      <div className="w-fit m-auto my-4">
+        <span className="mr-4 hover:underline">
+          <Link href="/">Back</Link>
+        </span>
+      </div>
+
       <AllIncompleteWorkOrders orders={ incompleteOrders } user={user} />
       <AllCompletedWorkOrders orders={ completedOrders } user={user} />
     </>

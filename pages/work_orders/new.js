@@ -91,7 +91,7 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
 
       return {
         redirect: {
-          destination: "/work_orders/list",
+          destination: "/my_work_orders/list",
           permanent:false
         }
       }
