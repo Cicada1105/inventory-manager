@@ -1,4 +1,4 @@
-export default function CompletedWorkOrders({ orders }) {
+export default function CompletedUserWorkOrders({ orders }) {
   return (
     <>
       <table className="m-auto mt-8 text-center" style={{color:"white"}}>

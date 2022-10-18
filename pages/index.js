@@ -2,7 +2,7 @@ import mongoClient, { ObjectId } from '../utils/mongodb.js'
 
 import AuthenticateUser from '../utils/auth.js'
 
-import PagePreview from './collection_preview.js'
+import { PagePreview } from '../components'
 
 export default function Home({ collections, user }) {
   const restrictions = user.restrictions;

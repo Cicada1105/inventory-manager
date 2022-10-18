@@ -4,9 +4,9 @@ import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
-import CompleteConfirmation from '../components/CompleteConfirmation.js'
+import CompleteConfirmation from './popups/CompleteConfirmation.js'
 
-export default function IncompleteWorkOrders({ orders, user }) {
+export default function AllIncompleteWorkOrders({ orders, user }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [workOrder,setWorkOrder] = useState(null);
   const [responseMsg, setResponseMsg] = useState(null);

@@ -4,9 +4,9 @@ import { useRouter } from 'next/router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
 
-import DeleteConfirmation from '../components/DeleteConfirmation.js'
+import DeleteConfirmation from './popups/DeleteConfirmation.js'
 
-export default function CompletedWorkOrders({ orders, user }) {
+export default function AllCompletedWorkOrders({ orders, user }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [workOrder,setWorkOrder] = useState(null);
   const [responseMsg, setResponseMsg] = useState(null);

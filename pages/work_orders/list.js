@@ -3,8 +3,8 @@ import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
-import CompleteOrders from './completed/'
-import IncompleteOrders from './incomplete/'
+import { AllCompletedWorkOrders } from '../../components'
+import { AllIncompleteWorkOrders } from '../../components'
 
 export default function WorkOrders({ orders, user }) {
   const workOrders = JSON.parse(orders);
@@ -14,8 +14,8 @@ export default function WorkOrders({ orders, user }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Work Orders</h1>
-      <IncompleteOrders orders={ incompleteOrders } user={user} />
-      <CompleteOrders orders={ completedOrders } user={user} />
+      <AllIncompleteWorkOrders orders={ incompleteOrders } user={user} />
+      <AllCompletedWorkOrders orders={ completedOrders } user={user} />
     </>
   )
 }

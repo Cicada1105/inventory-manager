@@ -6,7 +6,7 @@ import AuthenticateUser from '../../utils/auth.js'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons'
 
-import ConfirmationPopup from './ConfirmationPopup.js'
+import { RemoveUserPopup } from '../../components'
 
 export default function Users({ users }) {
   const [displayModal, setDisplayModal] = useState(false);
@@ -59,7 +59,7 @@ export default function Users({ users }) {
         }
         </tbody>
       </table>
-      {displayModal && <ConfirmationPopup user={removedUser} onCancel={handleRemoveDisplayModal} />}
+      {displayModal && <RemoveUserPopup user={removedUser} onCancel={handleRemoveDisplayModal} />}
     </>
   )
 }

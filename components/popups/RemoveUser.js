@@ -1,4 +1,4 @@
-export default function ConfirmationPopup({user: { id, user_name }, onCancel}) {
+export default function RemoveUserPopup({user: { id, user_name }, onCancel}) {
 	return (
 		<div className="fixed top-0 w-screen h-screen">
 			<div className="absolute bg-white opacity-75"></div>

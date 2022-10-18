@@ -2,8 +2,8 @@ import Link from 'next/link'
 import mongoClient, { ObjectId } from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
-import CompleteOrders from './completed/'
-import IncompleteOrders from './incomplete/'
+import { CompletedUserWorkOrders } from '../../components'
+import { IncompleteUserWorkOrders } from '../../components'
 
 export default function Users({ orders }) {
   const workOrders = JSON.parse(orders);
@@ -16,8 +16,8 @@ export default function Users({ orders }) {
       <div className="w-fit m-auto my-4 hover:underline">
         <Link href="/work_orders/new">New Work Order</Link>
       </div>
-      <IncompleteOrders orders={ incompleteOrders } />
-      <CompleteOrders orders={ completedOrders } />
+      <IncompleteUserWorkOrders orders={ incompleteOrders } />
+      <CompletedUserWorkOrders orders={ completedOrders } />
     </>
   )
 }

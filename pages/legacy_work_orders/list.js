@@ -6,7 +6,7 @@ import AuthenticateUser from '../../utils/auth.js'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faX } from '@fortawesome/free-solid-svg-icons'
 
-import ConfirmationPopup from './ConfirmationPopup.js'
+import { DeleteConfirmation } from '../../components'
 
 export default function WorkOrders({ orders }) {
   const legacyWorkOrders = JSON.parse(orders).sort(function(order1, order2) {
@@ -25,6 +25,7 @@ export default function WorkOrders({ orders }) {
 
   const [displayModal, setDisplayModal] = useState(false);
   const [removedWorkOrder,setRemovedWorkOrder] = useState(null);
+  const [responseMsg, setResponseMsg] = useState(null);
 
 
   function handleDisplayModal(id, user, item, num_items) {
@@ -36,6 +37,40 @@ export default function WorkOrders({ orders }) {
     setRemovedWorkOrder(null);
   }
 
+  function handleDeleteOrder(id) {
+    fetch("/api/legacy_work_orders/delete", {
+      method: 'POST',
+      mode: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    }).then(resp => {
+      resp.json().then(data => {
+        if (resp.status === 200)
+          setResponseMsg({ 
+            msg: data["message"],
+            isSuccess: true
+          });
+        else
+          setResponseMsg({
+            msg: data["message"],
+            isSuccess: false
+          })
+      });
+    }).catch(err => {
+      console.log("error");
+    }).finally(() => {
+      // Response is done, remoe modal
+      handleRemoveModal();
+      // After some time, reset response message and refresh page
+      setTimeout(() => {
+        routes.push("/legacy_work_orders/list");
+        setResponseMsg(null);
+      }, 2500);
+    })
+  }
+
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Legacy Work Orders</h1>
@@ -43,7 +78,14 @@ export default function WorkOrders({ orders }) {
         <Link href="/work_orders/list">Work Orders</Link>
       </div>
       <table className="text-center" style={{color:"white"}}>
-        <caption>Legacy Orders</caption>
+        <caption>
+          Legacy Orders
+          {
+            responseMsg && (
+              <><br /><span className={ responseMsg["isSuccess"] ? "text-green-400" : "text-red-400" }>{ responseMsg["msg"] }</span></>
+            )
+          }
+        </caption>
         <thead>
           <tr>
             <th>Work Order Owner</th>
@@ -79,7 +121,13 @@ export default function WorkOrders({ orders }) {
         }
         </tbody>
       </table>
-      {displayModal && <ConfirmationPopup workOrder={removedWorkOrder} onCancel={handleRemoveDisplayModal} />}
+      {
+        displayModal && 
+        <DeleteConfirmation workOrder={removedWorkOrder} controls={{ 
+            onCancel: handleRemoveDisplayModal, onSubmit: handleDeleteOrder 
+          }} 
+        />
+      }
     </>
   )
 }
