@@ -15,7 +15,9 @@ export default function NewWorkOrder({ items, user }) {
   return (
     <>
       <h1 className="text-center mt-3 mb-6 text-3xl font-bold underline">New Work Order</h1>
-      <Link href="/work_orders/list">Back</Link>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/">Back</Link>
+      </div>
       <section className="w-fit m-auto border-solid border-2 border-white p-8">
         <form action="/work_orders/new" onInput={ handleInputChange }>
           {
