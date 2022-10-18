@@ -9,7 +9,9 @@ export default function Users({ types }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Access Types</h1>
-      <Link href="/access_types/new">New Access Type</Link>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/access_types/new">New Access Type</Link>
+      </div>
       <table className="m-auto">
         <thead>
           <tr>
@@ -37,7 +39,9 @@ export default function Users({ types }) {
                   )
                 }
                 <td>
-                  <FontAwesomeIcon icon={faPenToSquare} />
+                  <Link href={`/access_types/update/${type["_id"].toString()}`}>
+                    <FontAwesomeIcon icon={faPenToSquare} />
+                  </Link>
                   <FontAwesomeIcon icon={faX} />
                 </td>
               </tr>

@@ -39,7 +39,9 @@ export default function WorkOrders({ orders }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Legacy Work Orders</h1>
-      <Link href="/work_orders/list">Work Orders</Link>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/work_orders/list">Work Orders</Link>
+      </div>
       <table className="text-center" style={{color:"white"}}>
         <caption>Legacy Orders</caption>
         <thead>

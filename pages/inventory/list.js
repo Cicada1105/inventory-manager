@@ -10,7 +10,9 @@ export default function Inventory({ items, user }) {
       <h1 className="text-center mt-3 text-3xl font-bold underline">
         Inventory
       </h1>
-      <Link href="/inventory/new">New Stock</Link>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/inventory/new">New Stock</Link>
+      </div>
       <table style={{color:"white"}}>
         <thead>
           <tr>

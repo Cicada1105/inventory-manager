@@ -12,7 +12,9 @@ export default function Users({ locations }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Locations</h1>
-      <Link href="/locations/new">New Location</Link>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/locations/new">New Location</Link>
+      </div>
       <table className="m-auto mt-8 text-center" style={{color:"white"}}>
         <thead>
           <tr>

@@ -16,34 +16,40 @@ export default function PagePreview({ name, page }) {
 	return (
 		<>
 			<h1 className="text-center mt-3 text-3xl font-bold underline">{ formatTitle(name) }</h1>
-	  		<Link href={`/${name}/list`}>View More</Link>
 	  		{
 	  			page.length === 0 ? 
-	  			<h2 className="text-lg text-center">No Work Orders</h2> :
-				<table className="table-fixed m-auto" style={{ width: "90%" }}>
-					<thead>
-					  <tr>
-					  {
-					  	filteredHeaders.map((header, i) => 
-					  		<th key={i} style={{ width: `${colWidth}%` }}>{ formatTitle(header) }</th>
-					  	)
-					  }
-					  </tr>
-					</thead>
-					<tbody>
-					{
-						(page.length > 0) && page.map((data,i) => 
-							<tr key={i}>
-								{
-									Object.values(data).map((cellData,i) => <td key={i} className="break-words w-min">{
-										cellData === null ? "" : cellData.toString()
-									}</td>)
-								}
-							</tr>
-						)
-					}
-					</tbody>
-				</table>
+	  			<h2 className="text-lg mt-4 mb-8 text-center">No Work Orders</h2> :
+	  			(
+	  				<>
+						<div className="w-fit mb-4 hover:underline" style={{ marginLeft: "5%" }}>
+				  			<Link href={`/${name}/list`}>View More</Link>
+						</div>
+						<table className="table-fixed m-auto" style={{ width: "90%" }}>
+							<thead>
+							  <tr>
+							  {
+							  	filteredHeaders.map((header, i) => 
+							  		<th key={i} style={{ width: `${colWidth}%` }}>{ formatTitle(header) }</th>
+							  	)
+							  }
+							  </tr>
+							</thead>
+							<tbody>
+							{
+								(page.length > 0) && page.map((data,i) => 
+									<tr key={i}>
+										{
+											Object.values(data).map((cellData,i) => <td key={i} className="break-words w-min">{
+												cellData === null ? "" : cellData.toString()
+											}</td>)
+										}
+									</tr>
+								)
+							}
+							</tbody>
+						</table>
+					</>
+	  			)
 	  		}
 		</>
 	);

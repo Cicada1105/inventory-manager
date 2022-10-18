@@ -23,7 +23,9 @@ export default function Users({ users }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Users</h1>
-      <Link href="/users/new">New User</Link>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/users/new">New User</Link>
+      </div>
       <table style={{color:"white"}}>
         <thead>
           <tr>

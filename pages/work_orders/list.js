@@ -14,7 +14,9 @@ export default function WorkOrders({ orders, user }) {
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Work Orders</h1>
-      <Link href="/work_orders/new">New Work Order</Link>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/work_orders/new">New Work Order</Link>
+      </div>
       <IncompleteOrders orders={ incompleteOrders } user={user} />
       <CompleteOrders orders={ completedOrders } user={user} />
     </>

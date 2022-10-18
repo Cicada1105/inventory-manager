@@ -7,8 +7,10 @@ import { formatTitle } from '../../utils/formatting.js'
 export default function NewAccessType({types}) {
   return (
     <>
-      <h1 className="text-center mt-3 mb-6 text-3xl font-bold underline">New Stock</h1>
-      <Link href="/access_types/list">Back</Link>
+      <h1 className="text-center mt-3 mb-6 text-3xl font-bold underline">New Access Type</h1>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/access_types/list">Back</Link>
+      </div>
       <section className="w-fit m-auto border-solid border-2 border-white p-8">
         <form>
           <div className="flex justify-between gap-20 mb-8">

@@ -14,7 +14,9 @@ export default function UpdateUser({ accessTypes, user }) {
   return (
     <>
       <h1 className="text-center mt-3 mb-6 text-3xl font-bold underline">Update User</h1>
-      <Link href="/users/list">Back</Link>
+      <div className="w-fit m-auto my-4 hover:underline">
+        <Link href="/users/list">Back</Link>
+      </div>
       <section className="w-fit m-auto border-solid border-2 border-white p-8">
         <form>
           <div className="flex justify-between gap-20 mb-8">
