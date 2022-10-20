@@ -1,4 +1,4 @@
-export default function ConfirmationPopup({ title, controls: { onCancel, onSubmit, btnText }, workOrderId }) {
+export default function ConfirmationPopup({ title, controls: { onCancel, onSubmit, btnText } }) {
 	return (
 		<div className="fixed top-0 w-screen h-screen">
 			<div className="absolute bg-white opacity-75"></div>
