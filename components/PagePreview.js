@@ -12,18 +12,19 @@ export default function PagePreview({ name, page }) {
 			return header;
 	});
 	let colWidth = (page.length > 0) && (90 / filteredHeaders.length).toFixed(2);
+	let linkStyling = page.length === 0 ? { marginLeft: "auto", marginRight: "auto" } : { marginLeft: "5%" };
 
 	return (
 		<>
 			<h1 className="text-center mt-3 text-3xl font-bold underline">{ formatTitle(name) }</h1>
+			<div className={`w-fit mb-4 hover:underline`} style={linkStyling}>
+	  			<Link href={`/${name}/list`}>View More</Link>
+			</div>
 	  		{
 	  			page.length === 0 ? 
-	  			<h2 className="text-lg mt-4 mb-8 text-center">No Work Orders</h2> :
+	  			<h2 className="text-lg mt-4 mb-8 text-center">No { formatTitle(name) }</h2> :
 	  			(
 	  				<>
-						<div className="w-fit mb-4 hover:underline" style={{ marginLeft: "5%" }}>
-				  			<Link href={`/${name}/list`}>View More</Link>
-						</div>
 						<table className="table-fixed m-auto" style={{ width: "90%" }}>
 							<thead>
 							  <tr>

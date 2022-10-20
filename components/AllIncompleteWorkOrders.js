@@ -58,6 +58,8 @@ export default function AllIncompleteWorkOrders({ orders, user }) {
   }
 
   return (
+    orders["length"] === 0 ?
+    <h2 className="my-8 text-center text-lg">No Completed Work Orders</h2> :
     <>
       <table className="m-auto mt-8 text-center" style={{color:"white"}}>
         <caption>
