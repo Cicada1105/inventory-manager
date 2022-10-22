@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import mongoClient from '../../../utils/mongodb'
 import AuthenticateUser from '../../../utils/auth.js'
@@ -11,29 +11,48 @@ export default function UpdateUser({ accessTypes, user }) {
   const [userData, setUserData] = useState(JSON.parse(user));
   const [types, setTypes] = useState(JSON.parse(accessTypes));
 
+  const [prefersDarkTheme, setPrefersDarkTheme] = useState(false);
+
+  useEffect(() => {
+    const mediaQueryList = window.matchMedia("(prefers-color-scheme:dark");
+
+    setPrefersDarkTheme(mediaQueryList["matches"]);
+
+    let preferenceChangeListener = function(e) {
+      setPrefersDarkTheme(e.matches);
+    }
+    // Add event listener to the media query
+    mediaQueryList.addEventListener("change",preferenceChangeListener);
+
+    // Remove event listener on cleanup
+    return () => {
+      mediaQueryList.removeEventListener("change",preferenceChangeListener);
+    }
+  },[]);
+
   return (
     <>
       <h1 className="text-center mt-3 mb-6 text-3xl font-bold underline">Update User</h1>
       <div className="w-fit m-auto my-4 hover:underline">
         <Link href="/users/list">Back</Link>
       </div>
-      <section className="w-fit m-auto border-solid border-2 border-white p-8">
+      <section className="w-fit m-auto border-solid border-2 p-8" style={{ borderColor: (prefersDarkTheme ? "white" : "black") }}>
         <form>
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="userFName" className="inline">First Name:</label>
-            <input id="userFName" className="" type="text" name="fname" defaultValue={ userData.first_name } required />
+            <input id="userFName" type="text" name="fname" defaultValue={ userData.first_name } required />
           </div>
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="userLName" className="inline">Last Name:</label>
-            <input id="userLName" className="" type="text" name="lname" defaultValue={ userData.last_name } required />
+            <input id="userLName" type="text" name="lname" defaultValue={ userData.last_name } required />
           </div>
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="userName" className="inline">Username:</label>
-            <input id="userName" className="" type="text" name="username" defaultValue={ userData.username } required />
+            <input id="userName" type="text" name="username" defaultValue={ userData.username } required />
           </div>
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="userPass" className="inline">Password:</label>
-            <input id="userPass" className="" type="password" name="password" />
+            <input id="userPass" type="password" name="password" />
           </div>
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="userAccess">Access Type:</label>
@@ -45,7 +64,7 @@ export default function UpdateUser({ accessTypes, user }) {
             </select>
           </div>
           <input type="hidden" name="_id" defaultValue={ userData["_id"].toString() } />
-          <input className="block mx-auto py-1 pl-2.5 pr-3 border-solid border-2 border-white rounded hover:bg-white hover:text-black hover:cursor-pointer" type="submit" value="Update" />
+          <input className="block mx-auto py-1 pl-2.5 pr-3 border-solid border-2 rounded hover:bg-white hover:text-black hover:cursor-pointer" type="submit" value="Update" />
         </form>
       </section>
     </>

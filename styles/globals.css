@@ -28,6 +28,14 @@ table {
 th, td {
   padding: 0.5rem 0.75rem;
 }
+input, select, textarea {
+  border: 2px solid black;
+}
+input[type="submit"]:hover {
+  background-color: black;
+  color: white;
+  cursor: pointer;
+}
 
 @media (prefers-color-scheme: dark) {
   html {
@@ -36,5 +44,12 @@ th, td {
   body {
     color: white;
     background: black;
+  }
+  input, select, textarea {
+    border-color: white;
+  }
+  input[type="submit"]:hover {
+    background-color: white;
+    color: black;
   }
 }

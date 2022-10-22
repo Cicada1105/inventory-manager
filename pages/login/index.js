@@ -1,6 +1,27 @@
+import { useState, useEffect } from 'react'
+
 export default function Login({ err }) {
+	const [prefersDarkTheme, setPrefersDarkTheme] = useState(false);
+
+	useEffect(() => {
+		const mediaQueryList = window.matchMedia("(prefers-color-scheme:dark");
+
+		setPrefersDarkTheme(mediaQueryList["matches"]);
+
+		let preferenceChangeListener = function(e) {
+			setPrefersDarkTheme(e.matches);
+		}
+		// Add event listener to the media query
+		mediaQueryList.addEventListener("change",preferenceChangeListener);
+
+		// Remove event listener on cleanup
+		return () => {
+			mediaQueryList.removeEventListener("change",preferenceChangeListener);
+		}
+	},[]);
+
 	return (
-		<section className="border-2 border-white w-fit m-auto mt-8 py-8 px-12 text-center">
+		<section className="border-2 w-fit m-auto mt-8 py-8 px-12 text-center" style={{ borderColor: (prefersDarkTheme ? "white" : "black") }}>
 			<h1 className="pb-4">Login</h1>
 	          {
 	            err && (
@@ -14,9 +35,12 @@ export default function Login({ err }) {
 				</div>
 				<div className="flex justify-between mb-16">
 					<label htmlFor="password_input">Password:</label>
-					<input id="password_input" className="" type="password" name="password" />
+					<input id="password_input" type="password" name="password" />
 				</div>
-				<input className="m-auto py-1 px-2 border-2 border-white bg-black hover:bg-white hover:text-black" type="submit" value="Login" />
+				<input 
+					type="submit" value="Login" 
+					className="m-auto py-1 px-2"
+				/>
 			</form>
 		</section>
 	);

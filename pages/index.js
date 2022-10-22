@@ -1,8 +1,11 @@
+import Link from 'next/link'
+
 import mongoClient, { ObjectId } from '../utils/mongodb.js'
 
 import AuthenticateUser from '../utils/auth.js'
 
-import { PagePreview } from '../components'
+import { CustomTable } from '../components'
+import { formatTitle } from '../utils/formatting.js'
 
 export default function Home({ collections, user }) {
   const restrictions = user.restrictions;
@@ -17,7 +20,7 @@ export default function Home({ collections, user }) {
       <p className="text-center">What you have access to:</p>
       {
         Object.entries(parsedCollections).map((entry, i) => 
-          <PagePreview key={i} name={entry[0]} page={entry[1]} />
+          <CustomTable key={i} title={(<Link href={`/${entry[0]}/list`}>{formatTitle(entry[0])}</Link>)} tableContent={entry[1]} />
         )
       }
     </>
@@ -49,14 +52,37 @@ export const getServerSideProps = AuthenticateUser(async function(context) {
     let userCollectionsLimited = {};
     for (let collection of userCollections) {
       let result = await collection.find({}).limit(3).toArray();
+
+      let filteredResults = result.map((document) => {
+        let tempDoc = {};
+        Object.keys(document).forEach((key) => {
+          if (key.includes("_id") || key.includes("password") || key.includes('restrictions'))
+            return;
+          else
+            tempDoc[key] = document[key];
+        });
+        return tempDoc;
+      });
+
       let nameOfCurrColl = collection["collectionName"];
-      userCollectionsLimited[nameOfCurrColl] = result;
+      userCollectionsLimited[nameOfCurrColl] = filteredResults;
     }
 
     let result = await db.collection("work_orders").find({
       user_id: new ObjectId(user["_id"])
     }).limit(3).toArray();
-    userCollectionsLimited["my_work_orders"] = result;
+    let filteredResults = result.map((document) => {
+      let tempDoc = {};
+      Object.keys(document).forEach((key) => {
+        if (key.includes("id") || key.includes("password") || key.includes('restrictions'))
+          return;
+        else
+          tempDoc[key] = document[key];
+      });
+      return tempDoc;
+    });
+
+    userCollectionsLimited["my_work_orders"] = filteredResults;
 
     return {
       props: { 

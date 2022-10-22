@@ -1,12 +1,38 @@
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+
 import mongoClient from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
+
+import { CustomTable } from '../../components/index.js'
 
 export default function Inventory({ items, user }) { 
   const userRestrictions = user.restrictions["inventory"];
   // Check if user has special create and read access
   const hasCreateAccess = userRestrictions.includes("create");
   const hasHigherReadAccess = userRestrictions.includes("read");
+  
+  const [tableContent, setTableContent] = useState([]);
+
+  useEffect(() => {
+    let updatedItems = JSON.parse(items).map((item,i) => {
+      let obj = {
+        name: item["name"],
+        brand: item["brand"]
+      };
+
+      if (hasHigherReadAccess) {
+        obj["quantity"] = item["quantity"];
+        obj["location"] = item.location[0]["name"];
+      }
+
+      obj["description"] = item["description"];
+
+      return obj;
+    });
+    
+    setTableContent(updatedItems);
+  }, []);
   
   return (
     <>
@@ -24,46 +50,13 @@ export default function Inventory({ items, user }) {
           </span>
         }
       </div>
-      <table className="m-auto mt-8 text-center" style={{color:"white"}}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Brand</th>
-            {
-              hasHigherReadAccess && (
-                <>
-                  <th>Quantity</th>
-                  <th>Location</th>
-                </>
-              )
-            }
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-        {
-          JSON.parse(items).map((item,i) => {
-            return (
-              <tr key={i}>
-                <td>{item.name}</td>
-                <td>{item.brand}</td>
-                {
-                  hasHigherReadAccess && (
-                    <>
-                      <td>{item.quantity}</td>
-                      <td>{item.location[0]["name"]}</td>
-                    </>
-                  )
-                }
-                <td>{item.description}</td>
-              </tr>
-            );
-          })
-        }
-        </tbody>
-      </table>
+      {
+        (JSON.parse(items).length !== 0 && tableContent.length === 0) ?
+        <h2 className="text-center">Loading...</h2> :
+        <CustomTable title="Inventory" tableContent={tableContent} /> 
+      }
     </>
-  )
+  );
 }
 
 export const getServerSideProps = AuthenticateUser(async function (context) {

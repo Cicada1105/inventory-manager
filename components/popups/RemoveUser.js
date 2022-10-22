@@ -1,3 +1,5 @@
+import ConfirmationPopup from './ConfirmationPopup.js'
+
 export default function RemoveUserPopup({user: { user_name }, controls: { onCancel, onSubmit }}) {
 	return (
 		<ConfirmationPopup 

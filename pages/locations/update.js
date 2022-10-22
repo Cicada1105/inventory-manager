@@ -1,9 +1,29 @@
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+
 import mongoClient, { ObjectId } from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
 export default function UpdateLocation({ location }) {
+  const [prefersDarkTheme, setPrefersDarkTheme] = useState(false);
   const currLocation = JSON.parse(location);
+
+  useEffect(() => {
+    const mediaQueryList = window.matchMedia("(prefers-color-scheme:dark");
+
+    setPrefersDarkTheme(mediaQueryList["matches"]);
+
+    let preferenceChangeListener = function(e) {
+      setPrefersDarkTheme(e.matches);
+    }
+    // Add event listener to the media query
+    mediaQueryList.addEventListener("change",preferenceChangeListener);
+
+    // Remove event listener on cleanup
+    return () => {
+      mediaQueryList.removeEventListener("change",preferenceChangeListener);
+    }
+  },[]);
 
   return (
     <>
@@ -11,18 +31,18 @@ export default function UpdateLocation({ location }) {
       <div className="w-fit m-auto my-4 hover:underline">
         <Link href="/locations/list">Back</Link>
       </div>
-      <section className="w-fit m-auto border-solid border-2 border-white p-8">
+      <section className="w-fit m-auto border-solid border-2 p-8" style={{ borderColor: (prefersDarkTheme ? "white" : "black") }}>
         <form>
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="locationName" className="inline">Name:</label>
-            <input id="locationName" type="text" value={ currLocation?.name } name="name" />
+            <input id="locationName" type="text" defaultValue={ currLocation?.name } name="name" />
           </div>
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="locationDescription">Description:</label>
-            <textarea id="locationDescription" name="description">{ currLocation?.description }</textarea>
+            <textarea id="locationDescription" name="description" defaultValue={ currLocation?.description }></textarea>
           </div>
-          { currLocation && <input type="hidden" name="id" value={ currLocation["_id"] } /> }
-          <input className="block mx-auto py-1 pl-2.5 pr-3 border-solid border-2 border-white rounded hover:bg-white hover:text-black hover:cursor-pointer" type="submit" value="Update" />
+          { currLocation && <input type="hidden" name="id" defaultValue={ currLocation["_id"] } /> }
+          <input className="block mx-auto py-1 pl-2.5 pr-3 border-solid border-2 rounded" type="submit" value="Update" />
         </form>
       </section>
     </>

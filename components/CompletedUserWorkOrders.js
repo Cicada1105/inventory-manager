@@ -1,35 +1,28 @@
+import { useState, useEffect } from 'react'
+
+import CustomTable from './CustomTable.js'
+
 export default function CompletedUserWorkOrders({ orders }) {
-  return (
-    orders["length"] === 0 ? 
-    <h2 className="my-8 text-center text-lg">No Completed Work Orders</h2> :
-    <table className="m-auto mt-8 text-center" style={{color:"white"}}>
-      <caption className="mb-4">Completed Orders</caption>
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Priority</th>
-          <th>Date Ordered</th>
-          <th>Date Fulfilled</th>
-          <th>Reason</th>
-        </tr>
-      </thead>
-      <tbody>
-      {
-        orders.map((order,i) => {
-          return (
-            <tr key={i}>
-              <td>{order["inventory"][0]["name"]}</td>
-              <td>{order.quantity_withdrawn}</td>
-              <td>{order.priority}</td>
-              <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
-              <td>{(new Date(order.date_fulfilled)).toLocaleDateString()}</td>
-              <td>{order.reason}</td>
-            </tr>
-          );
-        })
+  const [tableContent, setTableContent] = useState([]);
+
+  useEffect(() => {
+    let updatedOrders = orders.map((order,i) => {
+      return {
+        item: order["inventory"][0]["name"],
+        quantity: order["quantity_withdrawn"],
+        priority: order["priority"],
+        date_ordered: (new Date(order.date_ordered)).toLocaleDateString(),
+        date_fulfilled: (new Date(order.date_fulfilled)).toLocaleDateString(),
+        reason: order["reason"]
       }
-      </tbody>
-    </table>
+    });
+
+    setTableContent(updatedOrders);
+  }, []);
+
+  return (
+    (orders.length !== 0 && tableContent.length === 0) ?
+    <h2 className="text-center">Loading...</h2> :
+    <CustomTable title="Completed Orders" tableContent={tableContent} />
   )
 }

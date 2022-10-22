@@ -1,9 +1,13 @@
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import mongoClient from '../../utils/mongodb.js'
-import AuthenticateUser from '../../utils/auth.js'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons'
+
+import mongoClient from '../../utils/mongodb.js'
+import AuthenticateUser from '../../utils/auth.js'
+
+import { CustomTable } from '../../components/index.js'
 
 export default function Users({ types, user }) {
   const userRestrictions = user.restrictions["access_types"];
@@ -11,6 +15,42 @@ export default function Users({ types, user }) {
   const hasCreateAccess = userRestrictions.includes("create");
   const hasUpdateAccess = userRestrictions.includes('update');
   const hasDeleteAccess = userRestrictions.includes('delete');
+
+  const [tableContent, setTableContent] = useState([]);
+
+  useEffect(() => {
+    let updatedTypes = JSON.parse(types).map((type,i) => {
+      let obj = {
+        name: type["name"]
+      };
+
+      Object.keys(type["restrictions"]).map((page,i) => 
+        obj[page] = type["restrictions"][page].length === 0 ?
+          "No Access" :
+          type["restrictions"][page].join(", ")
+      )
+
+      if (hasUpdateAccess || hasDeleteAccess) {
+        obj["controls"] = (
+          <>
+            {
+              hasUpdateAccess && 
+              <Link href={`/access_types/update/${type["_id"].toString()}`}>
+                <FontAwesomeIcon icon={faPenToSquare} />
+              </Link>
+            }
+            {
+              hasDeleteAccess && <FontAwesomeIcon icon={faX} />
+            }
+          </>
+        )
+      }
+
+      return obj;
+    });
+    
+    setTableContent(updatedTypes);
+  }, []);
 
   return (
     <>
@@ -26,58 +66,13 @@ export default function Users({ types, user }) {
           </span>
         }
       </div>
-      <table className="m-auto">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th className="w-32">Access Types</th>
-            <th>Inventory</th>
-            <th className="w-32">Legacy Work Orders</th>
-            <th className="w-32">Locations</th>
-            <th className="w-32">Users</th>
-            <th className="w-32">Work Orders</th>
-            {
-              hasUpdateAccess && 
-              <th></th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-        {
-          JSON.parse(types).map((type,i) => {
-            return (
-              <tr key={i}>
-                <td>{type.name}</td>
-                {
-                  Object.keys(type["restrictions"]).map((page,i) => 
-                    type["restrictions"][page].length === 0 ?
-                    <td key={i}>No Access</td> :
-                    <td key={i}>{type["restrictions"][page].join(", ")}</td>
-                  )
-                }
-                {
-                  (hasUpdateAccess || hasDeleteAccess) && (
-                    <td>
-                      {
-                        hasUpdateAccess && 
-                        <Link href={`/access_types/update/${type["_id"].toString()}`}>
-                          <FontAwesomeIcon icon={faPenToSquare} />
-                        </Link>
-                      }
-                      {
-                        hasDeleteAccess && <FontAwesomeIcon icon={faX} />
-                      }
-                    </td>
-                  )
-                }
-              </tr>
-            );
-          })
-        }
-        </tbody>
-      </table>
+      {
+        (JSON.parse(types).length !== 0 && tableContent.length === 0) ?
+        <h2 className="text-center">Loading...</h2> :
+        <CustomTable title="Access Types" tableContent={tableContent} /> 
+      }
     </>
-  )
+  );
 }
 
 export const getServerSideProps = AuthenticateUser(async function(context) {

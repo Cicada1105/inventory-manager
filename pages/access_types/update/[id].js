@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import mongoClient, { ObjectId } from '../../../utils/mongodb.js'
 import AuthenticateUser from '../../../utils/auth.js'
@@ -7,6 +7,24 @@ import { formatTitle } from '../../../utils/formatting.js'
 
 export default function UpdateUser({ accessType, collectionNames }) {
   const [type, setType] = useState(JSON.parse(accessType));
+  const [prefersDarkTheme, setPrefersDarkTheme] = useState(false);
+
+  useEffect(() => {
+    const mediaQueryList = window.matchMedia("(prefers-color-scheme:dark");
+
+    setPrefersDarkTheme(mediaQueryList["matches"]);
+
+    let preferenceChangeListener = function(e) {
+      setPrefersDarkTheme(e.matches);
+    }
+    // Add event listener to the media query
+    mediaQueryList.addEventListener("change",preferenceChangeListener);
+
+    // Remove event listener on cleanup
+    return () => {
+      mediaQueryList.removeEventListener("change",preferenceChangeListener);
+    }
+  },[]);
 
   return (
     <>
@@ -14,7 +32,7 @@ export default function UpdateUser({ accessType, collectionNames }) {
       <div className="w-fit m-auto my-4 hover:underline">
         <Link href="/access_types/list">Back</Link>
       </div>
-      <section className="w-fit m-auto mb-8 border-solid border-2 border-white p-8">
+      <section className="w-fit m-auto mb-8 border-solid border-2 p-8" style={{ borderColor: (prefersDarkTheme ? "white" : "black") }}>
         <form action={`/access_types/update/${type["_id"]}`}>
           <div className="flex justify-between gap-20 mb-8">
             <label htmlFor="accessName" className="inline">Access Name:</label>
@@ -67,7 +85,7 @@ export default function UpdateUser({ accessType, collectionNames }) {
             })
           }
           <input type="hidden" name="_id" value={type["_id"]} />
-          <input className="block mx-auto py-1 pl-2.5 pr-3 border-solid border-2 border-white rounded hover:bg-white hover:text-black hover:cursor-pointer" type="submit" value="Update" />
+          <input className="block mx-auto py-1 pl-2.5 pr-3 border-solid border-2 rounded" type="submit" value="Update" />
         </form>
       </section>
     </>

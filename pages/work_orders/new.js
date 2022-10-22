@@ -1,8 +1,29 @@
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+
 import mongoClient, { ObjectId } from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
 
 export default function NewWorkOrder({ items, user }) {
+  const [prefersDarkTheme, setPrefersDarkTheme] = useState(false);
+
+  useEffect(() => {
+    const mediaQueryList = window.matchMedia("(prefers-color-scheme:dark");
+
+    setPrefersDarkTheme(mediaQueryList["matches"]);
+
+    let preferenceChangeListener = function(e) {
+      setPrefersDarkTheme(e.matches);
+    }
+    // Add event listener to the media query
+    mediaQueryList.addEventListener("change",preferenceChangeListener);
+
+    // Remove event listener on cleanup
+    return () => {
+      mediaQueryList.removeEventListener("change",preferenceChangeListener);
+    }
+  },[]);
+
   function handleInputChange(e) {
     // Retrieve element that triggered input change
     let el = e.target;
@@ -18,7 +39,7 @@ export default function NewWorkOrder({ items, user }) {
       <div className="w-fit m-auto my-4 hover:underline">
         <Link href="/">Back</Link>
       </div>
-      <section className="w-fit m-auto border-solid border-2 border-white p-8">
+      <section className="w-fit m-auto border-solid border-2 p-8" style={{ borderColor: (prefersDarkTheme ? "white" : "black") }}>
         <form action="/work_orders/new" onInput={ handleInputChange }>
           {
             // Add inventory is meant only for Admins adding items to inventory
@@ -50,7 +71,7 @@ export default function NewWorkOrder({ items, user }) {
             <label htmlFor="workOrderReason">Reason:</label>
             <textarea id="workOrderReason" type="text" name="reason" required></textarea>
           </div>
-          <input className="block mx-auto py-1 pl-2.5 pr-3 border-solid border-2 border-white rounded hover:bg-white hover:text-black hover:cursor-pointer" type="submit" value="Add" />
+          <input className="block mx-auto py-1 pl-2.5 pr-3 border-solid border-2 rounded" type="submit" value="Add" />
         </form>
       </section>
     </>

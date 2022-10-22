@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -6,10 +6,14 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons'
 
 import CompleteConfirmation from './popups/CompleteConfirmation.js'
 
+import CustomTable from './CustomTable.js'
+
 export default function AllIncompleteWorkOrders({ orders, user }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [workOrder,setWorkOrder] = useState(null);
   const [responseMsg, setResponseMsg] = useState(null);
+
+  const [tableContent, setTableContent] = useState([]);
 
   const routes = useRouter();
   const hasAccess = user.access_type === "Admin";
@@ -57,58 +61,44 @@ export default function AllIncompleteWorkOrders({ orders, user }) {
     })
   }
 
+  useEffect(() => {
+    let updatedOrders = orders.map((order,i) => {
+      let obj = {
+        work_order_owner: order["user"][0]["first_name"].concat(" ", order["user"][0]["last_name"]),
+        item: order["inventory"][0]["name"],
+        quantity: order["quantity_withdrawn"],
+        priority: order["priority"],
+        date_ordered: (new Date(order.date_ordered)).toLocaleDateString(),
+        reason: order["reason"]
+      };
+
+      hasAccess && (
+        obj["control_order"] = (
+          <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["inventory"][0]["name"], order["quantity_withdrawn"])}>
+            <FontAwesomeIcon className="hover:cursor-pointer" icon={faCheck} />
+          </span>
+        )
+      );
+
+      return obj;
+    });
+
+    setTableContent(updatedOrders);
+  }, []);
+
   return (
-    orders["length"] === 0 ?
-    <h2 className="my-8 text-center text-lg">No Completed Work Orders</h2> :
     <>
-      <table className="m-auto mt-8 text-center" style={{color:"white"}}>
-        <caption>
-          Incomplete Orders
-          {
-            responseMsg && (
-              <><br /><span className={ responseMsg["isSuccess"] ? "text-green-400" : "text-red-400" }>{ responseMsg["msg"] }</span></>
-            )
-          }
-        </caption>
-        <thead>
-          <tr>
-            <th>Work Order Owner</th>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Priority</th>
-            <th>Date Ordered</th>
-            <th>Reason</th>
-            {
-              hasAccess && <th>Control Order</th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-        {
-          orders.map((order,i) => {
-            return (
-              <tr key={i}> 
-                <td>{order["user"][0]["first_name"]} {order["user"][0]["last_name"]}</td>
-                <td>{order["inventory"][0]["name"]}</td>
-                <td>{order.quantity_withdrawn}</td>
-                <td>{order.priority}</td>
-                <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
-                <td>{order.reason}</td>
-                {
-                  hasAccess && 
-                  <td>
-                    <span onClick={() => handleDisplayModal(order["_id"], order["user"][0]["first_name"], order["inventory"][0]["name"], order["quantity_withdrawn"])}>
-                      <FontAwesomeIcon className="hover:cursor-pointer" icon={faCheck} />
-                    </span>
-                  </td>
-                }
-              </tr>
-            );
-          })
-        }
-        </tbody>
-      </table>
+      {
+        (orders.length !== 0 && tableContent.length === 0) ?
+        <h2 className="text-center">Loading...</h2> :
+        <CustomTable title="Incomplete Orders" tableContent={tableContent} />
+      }
       {displayModal && <CompleteConfirmation workOrder={workOrder} controls={{ onCancel: handleRemoveModal , onSubmit: () => handleCompleteOrder(workOrder["id"]) }} />}
     </>
+    //{
+    //  responseMsg && (
+    //    <><br /><span className={ responseMsg["isSuccess"] ? "text-green-400" : "text-red-400" }>{ responseMsg["msg"] }</span></>
+    //  )
+    //}
   )
 }

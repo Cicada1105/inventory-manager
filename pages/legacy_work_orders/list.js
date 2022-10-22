@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import mongoClient from '../../utils/mongodb.js'
 import AuthenticateUser from '../../utils/auth.js'
@@ -8,25 +8,14 @@ import { faX } from '@fortawesome/free-solid-svg-icons'
 
 import { DeleteConfirmation } from '../../components'
 
-export default function WorkOrders({ orders }) {
-  const legacyWorkOrders = JSON.parse(orders).sort(function(order1, order2) {
-    // Sort by orders not fulfilled first
-    if (order1["is_fulfilled"] && !order2["is_fulfilled"])
-      return 1;
-    // Sort from most recent to latest -> if order2 is greater than order1, swap values
-    if (order2["date_ordered"] > order1["date_ordered"])
-      return 1;
-    // Account for if the dates are equal, sort by name
-    if (order2["date_ordered"] === order1["date_ordered"])
-      return order1["user_name"].localeCompare(order2["user_name"]);
-  });
-  // Filter out work orders that are of current employees (user_name does not exists and user is an array)
-  const [workOrders, setWorkOrders] = useState(legacyWorkOrders);
+import { CustomTable } from '../../components/index.js'
 
+export default function WorkOrders({ orders }) {
   const [displayModal, setDisplayModal] = useState(false);
   const [removedWorkOrder,setRemovedWorkOrder] = useState(null);
   const [responseMsg, setResponseMsg] = useState(null);
 
+  const [tableContent, setTableContent] = useState([]);
 
   function handleDisplayModal(id, user, item, num_items) {
     setDisplayModal(true);
@@ -71,6 +60,39 @@ export default function WorkOrders({ orders }) {
     })
   }
 
+  useEffect(() => {
+    const legacyWorkOrders = JSON.parse(orders).sort(function(order1, order2) {
+      // Sort by orders not fulfilled first
+      if (order1["is_fulfilled"] && !order2["is_fulfilled"])
+        return 1;
+      // Sort from most recent to latest -> if order2 is greater than order1, swap values
+      if (order2["date_ordered"] > order1["date_ordered"])
+        return 1;
+      // Account for if the dates are equal, sort by name
+      if (order2["date_ordered"] === order1["date_ordered"])
+        return order1["user_name"].localeCompare(order2["user_name"]);
+    });
+
+    let updatedOrders = JSON.parse(orders).map((order,i) => {
+      return {
+        work_order_owner: order["user_name"],
+        item: order["inventory"][0]["name"],
+        quantity: order["quantity_withdrawn"],
+        priority: order["priority"],
+        date_ordered: (new Date(order.date_ordered)).toLocaleDateString(),
+        date_fulfilled: (new Date(order.date_fulfilled)).toLocaleDateString(),
+        reason: order["reason"],
+        control_order: (
+          <span onClick={() => handleDisplayModal(order["_id"], order["user_name"], order["inventory"][0]["name"], order["quantity_withdrawn"])}>
+            <FontAwesomeIcon icon={faX} className="hover:cursor-pointer" />
+          </span>
+        )
+      };
+    });
+    
+    setTableContent(updatedOrders);
+  }, []);
+
   return (
     <>
       <h1 className="text-center mt-3 text-3xl font-bold underline">Legacy Work Orders</h1>
@@ -82,57 +104,18 @@ export default function WorkOrders({ orders }) {
           <Link href="/work_orders/list">Work Orders</Link>
         </span>
       </div>
-      <table className="m-auto mt-8 text-center" style={{color:"white"}}>
-        <caption>
-          Legacy Orders
-          {
-            responseMsg && (
-              <><br /><span className={ responseMsg["isSuccess"] ? "text-green-400" : "text-red-400" }>{ responseMsg["msg"] }</span></>
-            )
-          }
-        </caption>
-        <thead>
-          <tr>
-            <th>Work Order Owner</th>
-            <th>Item</th>
-            <th>Quantity</th>
-            <th>Priority</th>
-            <th>Date Ordered</th>
-            <th>Date Fulfilled</th>
-            <th>Reason</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-        {
-          legacyWorkOrders.map((order,i) => {
-            return (
-              <tr key={i}>
-                <td>{order["user_name"]}</td>
-                <td>{order["inventory"][0]["name"]}</td>
-                <td>{order.quantity_withdrawn}</td>
-                <td>{order.priority}</td>
-                <td>{(new Date(order.date_ordered)).toLocaleDateString()}</td>
-                <td>{order["is_fulfilled"] ? (new Date(order.date_fulfilled)).toLocaleDateString() : "Not fulfilled"}</td>
-                <td>{order.reason}</td>
-                <td>
-                  <span onClick={() => handleDisplayModal(order["_id"], order["user_name"], order["stock"][0]["name"], order["quantity_withdrawn"])}>
-                    <FontAwesomeIcon icon={faX} className="hover:cursor-pointer" />
-                  </span>
-                </td>
-              </tr>
-            );
-          })
-        }
-        </tbody>
-      </table>
       {
-        displayModal && 
-        <DeleteConfirmation workOrder={removedWorkOrder} controls={{ 
-            onCancel: handleRemoveDisplayModal, onSubmit: handleDeleteOrder 
-          }} 
-        />
+        (JSON.parse(orders).length !== 0 && tableContent.length === 0) ?
+        <h2 className="text-center">Loading...</h2> :
+        <CustomTable title="Legacy Work Orders" tableContent={tableContent} /> 
       }
+      {
+         displayModal && 
+         <DeleteConfirmation workOrder={removedWorkOrder} controls={{ 
+             onCancel: handleRemoveDisplayModal, onSubmit: handleDeleteOrder 
+           }} 
+         />
+       }
     </>
   )
 }

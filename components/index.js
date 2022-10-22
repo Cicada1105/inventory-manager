@@ -8,12 +8,12 @@ import AllIncompleteWorkOrders from './AllIncompleteWorkOrders.js'
 import CompletedUserWorkOrders from './CompletedUserWorkOrders.js'
 import IncompleteUserWorkOrders from './IncompleteUserWorkOrders.js'
 
-import PagePreview from './PagePreview.js'
+import CustomTable from './CustomTable.js'
 
 export {
 	CompleteConfirmation, ConfirmationPopup, DeleteConfirmation,
 	RemoveUserPopup,
 	AllCompletedWorkOrders, AllIncompleteWorkOrders,
 	CompletedUserWorkOrders, IncompleteUserWorkOrders,
-	PagePreview
+	CustomTable
 }

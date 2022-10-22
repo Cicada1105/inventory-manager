@@ -9,12 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@mui/icons-material": "^5.10.9",
+    "@mui/material": "^5.10.10",
     "bcrypt": "^5.0.1",
     "iron-session": "^6.2.1",
     "mongodb": "^4.9.0",
+    "mui-datatables": "^4.2.2",
     "next": "12.2.5",
     "react": "18.2.0",
     "react-dom": "18.2.0"
